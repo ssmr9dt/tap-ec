@@ -69,38 +69,45 @@ function init() {
         onClickButton();
     });
 
-    // 画面全体のクリックイベントリスナー（クリック可能な要素を設定）
-    const clickableElements = [mainContent, header, footer].filter(el => el !== null);
-    
-    clickableElements.forEach(element => {
-        // クリックイベント
-        element.addEventListener('click', (e) => {
-            // フォーム、ボタン、テーブル、リンクなどのインタラクティブ要素をクリックした場合は無視
-            if (e.target.closest('form') || 
-                e.target.closest('button') || 
-                e.target.closest('input') || 
-                e.target.closest('select') ||
-                e.target.closest('table') ||
-                e.target.closest('a')) {
-                return;
-            }
-            onClickButton();
-        });
-        
-        // タッチイベントも追加（モバイル対応）
-        element.addEventListener('touchend', (e) => {
-            if (e.target.closest('form') || 
-                e.target.closest('button') || 
-                e.target.closest('input') || 
-                e.target.closest('select') ||
-                e.target.closest('table') ||
-                e.target.closest('a')) {
-                return;
-            }
-            e.preventDefault(); // デフォルトの動作を防ぐ
-            onClickButton();
-        }, { passive: false });
+    // グループ選択モーダルのクリックイベントリスナー（最初の画面）
+    groupSelectModal.addEventListener('click', (e) => {
+        // ボタンなどのインタラクティブ要素をクリックした場合は無視
+        if (e.target.closest('button') || 
+            e.target.closest('input') || 
+            e.target.closest('select') ||
+            e.target.closest('a')) {
+            return;
+        }
+        // モーダルが表示されている間はクリック無効（グループ選択のみ）
     });
+
+    // ゲームコンテナ全体のクリックイベントリスナー（一画面全体）
+    gameContainer.addEventListener('click', (e) => {
+        // フォーム、ボタン、テーブル、リンクなどのインタラクティブ要素をクリックした場合は無視
+        if (e.target.closest('form') || 
+            e.target.closest('button') || 
+            e.target.closest('input') || 
+            e.target.closest('select') ||
+            e.target.closest('table') ||
+            e.target.closest('a')) {
+            return;
+        }
+        onClickButton();
+    });
+    
+    // ゲームコンテナ全体のタッチイベント（モバイル対応）
+    gameContainer.addEventListener('touchend', (e) => {
+        if (e.target.closest('form') || 
+            e.target.closest('button') || 
+            e.target.closest('input') || 
+            e.target.closest('select') ||
+            e.target.closest('table') ||
+            e.target.closest('a')) {
+            return;
+        }
+        e.preventDefault(); // デフォルトの動作を防ぐ
+        onClickButton();
+    }, { passive: false });
 
     // トレードフォームのイベントリスナー
     tradeForm.addEventListener('submit', onTradeSubmit);
