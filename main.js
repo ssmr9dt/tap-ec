@@ -334,8 +334,10 @@ async function onClickButton(event) {
         clickCountDisplay.textContent = clickCount;
         renderAll();
         
-        // 「+1」が飛ぶアニメーションを表示
-        showFloatingText(clickX, clickY, '+1');
+        // 「+1」が飛ぶアニメーションを表示（少し遅延させて確実に表示）
+        setTimeout(() => {
+            showFloatingText(clickX, clickY, '+1');
+        }, 50);
     } catch (error) {
         console.error(error);
     }
@@ -371,24 +373,35 @@ function showClickEffect(x, y) {
 
 // 「+1」が飛ぶアニメーションを表示する関数
 function showFloatingText(x, y, text) {
+    // 要素を作成
     const floatingText = document.createElement('div');
     floatingText.className = 'floating-text';
     floatingText.textContent = text;
     
     // ビューポート内に収める（画面外に出ないように調整）
-    const maxX = window.innerWidth - 100;
-    const maxY = window.innerHeight - 100;
-    const minX = 0;
-    const minY = 0;
+    // transform: translate(-50%, -50%)を使用するため、位置をそのまま設定
+    const maxX = window.innerWidth - 50;
+    const maxY = window.innerHeight - 50;
+    const minX = 50;
+    const minY = 50;
     
-    floatingText.style.left = `${Math.max(minX, Math.min(maxX, x))}px`;
-    floatingText.style.top = `${Math.max(minY, Math.min(maxY, y))}px`;
+    const adjustedX = Math.max(minX, Math.min(maxX, x));
+    const adjustedY = Math.max(minY, Math.min(maxY, y));
     
+    floatingText.style.left = `${adjustedX}px`;
+    floatingText.style.top = `${adjustedY}px`;
+    
+    // DOMに追加
     document.body.appendChild(floatingText);
+    
+    // 強制的にリフローを発生させてアニメーションを開始
+    floatingText.offsetHeight;
     
     // アニメーション後に削除
     setTimeout(() => {
-        floatingText.remove();
+        if (floatingText && floatingText.parentNode) {
+            floatingText.remove();
+        }
     }, 1000);
 }
 
