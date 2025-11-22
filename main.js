@@ -29,6 +29,8 @@ let rates = {
 };
 
 let clickCount = 0;
+let lastClickTime = 0;
+const CLICK_COOLDOWN = 200; // 0.2秒（200ミリ秒）
 
 // ============================================
 // DOM要素の取得
@@ -49,7 +51,6 @@ const tradeForm = document.getElementById('trade-form');
 const tradeFrom = document.getElementById('trade-from');
 const tradeTo = document.getElementById('trade-to');
 const tradeAmount = document.getElementById('trade-amount');
-const logArea = document.getElementById('log');
 
 // ============================================
 // 初期化関数
@@ -66,41 +67,67 @@ function init() {
     // クリックボタンのイベントリスナー
     clickButton.addEventListener('click', (e) => {
         e.stopPropagation(); // イベントの伝播を止める
-        onClickButton();
+        // クリックボタンの中心位置を取得
+        const rect = clickButton.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        e.clientX = centerX;
+        e.clientY = centerY;
+        onClickButton(e);
     });
 
-    // 画面全体のクリックイベントリスナー（クリック可能な要素を設定）
-    const clickableElements = [mainContent, header, footer].filter(el => el !== null);
-    
-    clickableElements.forEach(element => {
-        // クリックイベント
-        element.addEventListener('click', (e) => {
-            // フォーム、ボタン、テーブル、リンクなどのインタラクティブ要素をクリックした場合は無視
-            if (e.target.closest('form') || 
-                e.target.closest('button') || 
-                e.target.closest('input') || 
-                e.target.closest('select') ||
-                e.target.closest('table') ||
-                e.target.closest('a')) {
-                return;
-            }
-            onClickButton();
-        });
-        
-        // タッチイベントも追加（モバイル対応）
-        element.addEventListener('touchend', (e) => {
-            if (e.target.closest('form') || 
-                e.target.closest('button') || 
-                e.target.closest('input') || 
-                e.target.closest('select') ||
-                e.target.closest('table') ||
-                e.target.closest('a')) {
-                return;
-            }
-            e.preventDefault(); // デフォルトの動作を防ぐ
-            onClickButton();
-        }, { passive: false });
+    // グループ選択モーダルのクリックイベントリスナー（最初の画面）
+    groupSelectModal.addEventListener('click', (e) => {
+        // ボタンなどのインタラクティブ要素をクリックした場合は無視
+        if (e.target.closest('button') || 
+            e.target.closest('input') || 
+            e.target.closest('select') ||
+            e.target.closest('a')) {
+            return;
+        }
+        // モーダルが表示されている間はクリック無効（グループ選択のみ）
     });
+
+    // ゲームコンテナ全体のクリックイベントリスナー（一画面全体）
+    gameContainer.addEventListener('click', (e) => {
+        // フォーム、ボタン、テーブル、リンクなどのインタラクティブ要素をクリックした場合は無視
+        if (e.target.closest('form') || 
+            e.target.closest('button') || 
+            e.target.closest('input') || 
+            e.target.closest('select') ||
+            e.target.closest('table') ||
+            e.target.closest('a')) {
+            return;
+        }
+        // クリック位置を確実に取得
+        const clickEvent = {
+            clientX: e.clientX,
+            clientY: e.clientY,
+            pageX: e.pageX,
+            pageY: e.pageY
+        };
+        onClickButton(clickEvent);
+    });
+    
+    // ゲームコンテナ全体のタッチイベント（モバイル対応）
+    gameContainer.addEventListener('touchend', (e) => {
+        if (e.target.closest('form') || 
+            e.target.closest('button') || 
+            e.target.closest('input') || 
+            e.target.closest('select') ||
+            e.target.closest('table') ||
+            e.target.closest('a')) {
+            return;
+        }
+        e.preventDefault(); // デフォルトの動作を防ぐ
+        // タッチ位置を確実に取得
+        const touchEvent = {
+            changedTouches: e.changedTouches,
+            clientX: e.changedTouches && e.changedTouches[0] ? e.changedTouches[0].clientX : undefined,
+            clientY: e.changedTouches && e.changedTouches[0] ? e.changedTouches[0].clientY : undefined
+        };
+        onClickButton(touchEvent);
+    }, { passive: false });
 
     // トレードフォームのイベントリスナー
     tradeForm.addEventListener('submit', onTradeSubmit);
@@ -147,12 +174,32 @@ function preventDoubleTapZoom() {
         event.preventDefault();
     }, { passive: false });
     
-    // ピンチズームを防止
+    // ピンチズームを防止（2本指以上のタッチを防止）
+    document.addEventListener('touchstart', function(event) {
+        if (event.touches.length > 1) {
+            event.preventDefault();
+        }
+    }, { passive: false });
+    
     document.addEventListener('touchmove', function(event) {
         if (event.touches.length > 1) {
             event.preventDefault();
         }
     }, { passive: false });
+    
+    // wheelイベントでズームを防止（マウスホイール）
+    document.addEventListener('wheel', function(event) {
+        if (event.ctrlKey) {
+            event.preventDefault();
+        }
+    }, { passive: false });
+    
+    // キーボードショートカットでのズームを防止
+    document.addEventListener('keydown', function(event) {
+        if ((event.ctrlKey || event.metaKey) && (event.key === '+' || event.key === '-' || event.key === '=' || event.key === '0')) {
+            event.preventDefault();
+        }
+    });
 }
 
 // グループ選択
@@ -171,7 +218,6 @@ function selectGroup(group) {
     playerGroupDisplay.style.backgroundColor = groupColors[group];
     
     renderAll();
-    addLog(`Group ${group} を選択しました`, 'success');
 }
 
 // 初期状態の読み込み（モック）
@@ -249,11 +295,51 @@ function renderRateTable() {
 // ============================================
 // イベントハンドラー
 // ============================================
-async function onClickButton() {
+async function onClickButton(event) {
+    // クリックのレート制限（0.2秒に1回）
+    const now = Date.now();
+    if (now - lastClickTime < CLICK_COOLDOWN) {
+        return; // クールダウン中は無視
+    }
+    lastClickTime = now;
+    
     if (!player.group) {
-        addLog('エラー: グループが選択されていません', 'error');
         return;
     }
+    
+    // クリック位置を取得（マウスまたはタッチ）
+    let clickX, clickY;
+    if (event) {
+        // touchendイベントの場合（タッチ終了）
+        if (event.changedTouches && event.changedTouches.length > 0) {
+            clickX = event.changedTouches[0].clientX;
+            clickY = event.changedTouches[0].clientY;
+        }
+        // touchstart/touchmoveイベントの場合（タッチ中）
+        else if (event.touches && event.touches.length > 0) {
+            clickX = event.touches[0].clientX;
+            clickY = event.touches[0].clientY;
+        }
+        // マウスイベントの場合
+        else if (typeof event.clientX === 'number' && typeof event.clientY === 'number') {
+            clickX = event.clientX;
+            clickY = event.clientY;
+        }
+        // pageX/pageYをフォールバックとして使用
+        else if (typeof event.pageX === 'number' && typeof event.pageY === 'number') {
+            clickX = event.pageX;
+            clickY = event.pageY;
+        }
+    }
+    
+    // クリック位置が取得できない場合は画面中央を使用
+    if (clickX === undefined || clickY === undefined || isNaN(clickX) || isNaN(clickY)) {
+        clickX = window.innerWidth / 2;
+        clickY = window.innerHeight / 2;
+    }
+    
+    // クリックエフェクトを表示（一画面内に収める）
+    showClickEffect(clickX, clickY);
     
     try {
         // モックAPIを呼び出し
@@ -268,17 +354,81 @@ async function onClickButton() {
         clickCountDisplay.textContent = clickCount;
         renderAll();
         
-        addLog(`クリック！ Group ${player.group} の資産が増加しました`, 'success');
+        // 「+1」が飛ぶアニメーションを表示（少し遅延させて確実に表示）
+        setTimeout(() => {
+            showFloatingText(clickX, clickY, '+1');
+        }, 50);
     } catch (error) {
-        addLog(`エラー: ${error.message}`, 'error');
+        console.error(error);
     }
+}
+
+// クリックエフェクトを表示する関数（一画面内に収める）
+function showClickEffect(x, y) {
+    // エフェクト要素を作成
+    const effect = document.createElement('div');
+    effect.className = 'click-effect';
+    
+    // ビューポート内に収める（画面外に出ないように調整）
+    const maxX = window.innerWidth - 40;
+    const maxY = window.innerHeight - 40;
+    const minX = 40;
+    const minY = 40;
+    
+    const adjustedX = Math.max(minX, Math.min(maxX, x));
+    const adjustedY = Math.max(minY, Math.min(maxY, y));
+    
+    effect.style.left = `${adjustedX}px`;
+    effect.style.top = `${adjustedY}px`;
+    
+    document.body.appendChild(effect);
+    
+    // アニメーション後に削除
+    setTimeout(() => {
+        if (effect.parentNode) {
+            effect.remove();
+        }
+    }, 600);
+}
+
+// 「+1」が飛ぶアニメーションを表示する関数
+function showFloatingText(x, y, text) {
+    // 要素を作成
+    const floatingText = document.createElement('div');
+    floatingText.className = 'floating-text';
+    floatingText.textContent = text;
+    
+    // ビューポート内に収める（画面外に出ないように調整）
+    // transform: translate(-50%, -50%)を使用するため、位置をそのまま設定
+    const maxX = window.innerWidth - 50;
+    const maxY = window.innerHeight - 50;
+    const minX = 50;
+    const minY = 50;
+    
+    const adjustedX = Math.max(minX, Math.min(maxX, x));
+    const adjustedY = Math.max(minY, Math.min(maxY, y));
+    
+    floatingText.style.left = `${adjustedX}px`;
+    floatingText.style.top = `${adjustedY}px`;
+    
+    // DOMに追加
+    document.body.appendChild(floatingText);
+    
+    // 強制的にリフローを発生させてアニメーションを開始
+    floatingText.offsetHeight;
+    
+    // アニメーション後に削除
+    setTimeout(() => {
+        if (floatingText && floatingText.parentNode) {
+            floatingText.remove();
+        }
+    }, 1000);
 }
 
 async function onTradeSubmit(e) {
     e.preventDefault();
     
     if (!player.group) {
-        addLog('エラー: グループが選択されていません', 'error');
         return;
     }
     
@@ -287,12 +437,10 @@ async function onTradeSubmit(e) {
     const amount = parseInt(tradeAmount.value);
     
     if (from === to) {
-        addLog('エラー: From通貨とTo通貨が同じです', 'error');
         return;
     }
     
     if (amount <= 0) {
-        addLog('エラー: 数量は1以上を指定してください', 'error');
         return;
     }
     
@@ -308,12 +456,10 @@ async function onTradeSubmit(e) {
         // UIを更新
         renderAll();
         
-        addLog(`トレード成功: ${amount} ${from} → ${to}`, 'success');
-        
         // フォームをリセット
         tradeAmount.value = '1';
     } catch (error) {
-        addLog(`エラー: ${error.message}`, 'error');
+        console.error(error);
     }
 }
 
@@ -412,24 +558,6 @@ async function mockTrade(player, from, to, amount, rates) {
             });
         }, 100);
     });
-}
-
-// ============================================
-// ログ機能
-// ============================================
-function addLog(message, type = 'info') {
-    const logEntry = document.createElement('div');
-    logEntry.className = `log-entry ${type}`;
-    
-    const timestamp = new Date().toLocaleTimeString();
-    logEntry.textContent = `[${timestamp}] ${message}`;
-    
-    logArea.insertBefore(logEntry, logArea.firstChild);
-    
-    // ログが多すぎる場合は古いものを削除
-    while (logArea.children.length > 20) {
-        logArea.removeChild(logArea.lastChild);
-    }
 }
 
 // ============================================
