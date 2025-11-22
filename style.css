@@ -6,9 +6,9 @@
 
 html {
     height: 100%;
-    overflow: hidden;
-    touch-action: none;
-    -ms-touch-action: none;
+    overflow: auto;
+    touch-action: pan-y;
+    -ms-touch-action: pan-y;
     -webkit-tap-highlight-color: transparent;
     -webkit-touch-callout: none;
 }
@@ -18,15 +18,13 @@ body {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     min-height: 100vh;
     color: #333;
-    touch-action: none;
-    -ms-touch-action: none;
+    touch-action: pan-y;
+    -ms-touch-action: pan-y;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     user-select: none;
-    overflow: hidden;
-    position: fixed;
+    overflow: auto;
     width: 100%;
-    height: 100%;
 }
 
 /* モーダル（グループ選択） */
@@ -89,11 +87,11 @@ body {
 .container {
     display: flex;
     flex-direction: column;
-    height: 100vh;
-    overflow: hidden;
+    min-height: 100vh;
+    overflow: visible;
     position: relative;
     cursor: pointer;
-    touch-action: none;
+    touch-action: pan-y;
 }
 
 /* クリックエフェクト（一画面内に収める） */
