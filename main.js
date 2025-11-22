@@ -33,6 +33,78 @@ let lastClickTime = 0;
 const CLICK_COOLDOWN = 200; // 0.2秒（200ミリ秒）
 
 // ============================================
+// localStorage管理関数
+// ============================================
+const STORAGE_KEY = 'clicker-game-state';
+
+function saveGameState() {
+    try {
+        const gameState = {
+            player: player,
+            groups: groups,
+            rates: rates,
+            clickCount: clickCount,
+            timestamp: Date.now()
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(gameState));
+    } catch (error) {
+        console.error('Failed to save game state:', error);
+    }
+}
+
+function loadGameState() {
+    try {
+        const savedState = localStorage.getItem(STORAGE_KEY);
+        if (savedState) {
+            const gameState = JSON.parse(savedState);
+            
+            // データの整合性チェック
+            if (gameState.player && gameState.groups && gameState.rates) {
+                player = {
+                    group: gameState.player.group || null,
+                    commonCurrency: gameState.player.commonCurrency || 0,
+                    groupCurrencies: gameState.player.groupCurrencies || {
+                        A: 0,
+                        B: 0,
+                        C: 0,
+                        D: 0
+                    }
+                };
+                
+                groups = gameState.groups || {
+                    A: { totalWealth: 0 },
+                    B: { totalWealth: 0 },
+                    C: { totalWealth: 0 },
+                    D: { totalWealth: 0 }
+                };
+                
+                rates = gameState.rates || {
+                    A: 1,
+                    B: 1,
+                    C: 1,
+                    D: 1
+                };
+                
+                clickCount = gameState.clickCount || 0;
+                
+                return true;
+            }
+        }
+    } catch (error) {
+        console.error('Failed to load game state:', error);
+    }
+    return false;
+}
+
+function clearGameState() {
+    try {
+        localStorage.removeItem(STORAGE_KEY);
+    } catch (error) {
+        console.error('Failed to clear game state:', error);
+    }
+}
+
+// ============================================
 // DOM要素の取得
 // ============================================
 const groupSelectModal = document.getElementById('group-select-modal');
@@ -150,9 +222,7 @@ function init() {
         tradeButton.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();
-            console.log('Trade button clicked');
             tradeModal.style.display = 'flex';
-            console.log('Trade modal display:', tradeModal.style.display);
         });
     } else {
         console.error('Trade button or modal not found:', { tradeButton, tradeModal });
@@ -184,9 +254,7 @@ function init() {
         groupWealthButton.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();
-            console.log('Group wealth button clicked');
             groupWealthModal.style.display = 'flex';
-            console.log('Group wealth modal display:', groupWealthModal.style.display);
         });
     } else {
         console.error('Group wealth button or modal not found:', { groupWealthButton, groupWealthModal });
@@ -212,9 +280,7 @@ function init() {
         exchangeRateButton.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();
-            console.log('Exchange rate button clicked');
             exchangeRateModal.style.display = 'flex';
-            console.log('Exchange rate modal display:', exchangeRateModal.style.display);
         });
     } else {
         console.error('Exchange rate button or modal not found:', { exchangeRateButton, exchangeRateModal });
@@ -336,12 +402,36 @@ function selectGroup(group) {
     playerGroupDisplay.style.backgroundColor = groupColors[group];
     
     renderAll();
+    
+    // 状態を保存
+    saveGameState();
 }
 
-// 初期状態の読み込み（モック）
+// 初期状態の読み込み（localStorageから復元）
 function loadInitialState() {
-    // 初期値は既に設定済み（全て0、レートは1）
-    // 将来的にサーバーから取得する処理に置き換え可能
+    const loaded = loadGameState();
+    if (loaded && player.group) {
+        // グループが選択されている場合は、ゲーム画面を表示
+        groupSelectModal.style.display = 'none';
+        gameContainer.style.display = 'flex';
+        
+        // プレイヤーグループの色を設定
+        const groupColors = {
+            A: '#ff6b6b',
+            B: '#4ecdc4',
+            C: '#45b7d1',
+            D: '#f9ca24'
+        };
+        if (playerGroupDisplay) {
+            playerGroupDisplay.style.backgroundColor = groupColors[player.group];
+        }
+        
+        // UIを更新
+        renderAll();
+    } else {
+        // 保存された状態がない場合は初期状態
+        // 初期値は既に設定済み（全て0、レートは1）
+    }
 }
 
 // ============================================
@@ -351,6 +441,11 @@ function renderAll() {
     renderPlayerInfo();
     renderGroupTable();
     renderRateTable();
+    
+    // クリック数の表示も更新
+    if (clickCountDisplay) {
+        clickCountDisplay.textContent = clickCount;
+    }
 }
 
 function renderPlayerInfo() {
@@ -471,6 +566,9 @@ async function onClickButton(event) {
         clickCountDisplay.textContent = clickCount;
         renderAll();
         
+        // 状態を保存
+        saveGameState();
+        
         // 「+1」が飛ぶアニメーションを表示（少し遅延させて確実に表示）
         setTimeout(() => {
             showFloatingText(clickX, clickY, '+1');
@@ -572,6 +670,9 @@ async function onTradeSubmit(e) {
         
         // UIを更新
         renderAll();
+        
+        // 状態を保存
+        saveGameState();
         
         // フォームをリセット
         tradeAmount.value = '1';
@@ -691,10 +792,3 @@ if (document.readyState === 'loading') {
     init();
 }
 
-// デバッグ用：モーダル要素の確認
-console.log('Trade Modal:', tradeModal);
-console.log('Trade Button:', tradeButton);
-console.log('Group Wealth Modal:', groupWealthModal);
-console.log('Group Wealth Button:', groupWealthButton);
-console.log('Exchange Rate Modal:', exchangeRateModal);
-console.log('Exchange Rate Button:', exchangeRateButton);
