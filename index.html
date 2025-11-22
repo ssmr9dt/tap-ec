@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>クリッカーゲーム</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- グループ選択モーダル（初期表示） -->
+    <div id="group-select-modal" class="modal">
+        <div class="modal-content">
+            <h2>グループを選択してください</h2>
+            <div class="group-buttons">
+                <button class="group-btn" data-group="A" style="background-color: #ff6b6b;">Group A</button>
+                <button class="group-btn" data-group="B" style="background-color: #4ecdc4;">Group B</button>
+                <button class="group-btn" data-group="C" style="background-color: #45b7d1;">Group C</button>
+                <button class="group-btn" data-group="D" style="background-color: #f9ca24;">Group D</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- メインゲーム画面 -->
+    <div id="game-container" class="container" style="display: none;">
+        <!-- 上部ヘッダー -->
+        <header class="header">
+            <div class="header-left">
+                <h1 class="game-title">クリッカーゲーム</h1>
+            </div>
+            <div class="header-right">
+                <div class="player-info">
+                    <span id="player-group" class="player-group"></span>
+                    <span id="player-common" class="player-currency">Common: <span id="player-common-value">0</span></span>
+                </div>
+            </div>
+        </header>
+
+        <!-- 中央エリア（2カラム） -->
+        <main class="main-content">
+            <!-- 左カラム：クリックボタン -->
+            <div class="left-column">
+                <button id="click-button" class="click-button">CLICK</button>
+                <div class="click-info">
+                    <p>クリック数: <span id="click-count">0</span></p>
+                </div>
+            </div>
+
+            <!-- 右カラム：グループ情報と為替レート -->
+            <div class="right-column">
+                <!-- グループ総資産テーブル -->
+                <div class="info-section">
+                    <h3>グループ総資産</h3>
+                    <table id="group-table" class="data-table">
+                        <thead>
+                            <tr>
+                                <th>グループ</th>
+                                <th>総資産</th>
+                            </tr>
+                        </thead>
+                        <tbody id="group-table-body">
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- 為替レートテーブル -->
+                <div class="info-section">
+                    <h3>為替レート</h3>
+                    <table id="rate-table" class="data-table">
+                        <thead>
+                            <tr>
+                                <th>通貨ペア</th>
+                                <th>レート</th>
+                            </tr>
+                        </thead>
+                        <tbody id="rate-table-body">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+
+        <!-- 下部エリア：トレードフォームとログ -->
+        <footer class="footer">
+            <!-- トレードフォーム -->
+            <div class="trade-section">
+                <h3>トレード</h3>
+                <form id="trade-form" class="trade-form">
+                    <div class="form-row">
+                        <label>
+                            From通貨:
+                            <select id="trade-from" name="from">
+                                <option value="Common">Common</option>
+                                <option value="A">A</option>
+                                <option value="B">B</option>
+                                <option value="C">C</option>
+                                <option value="D">D</option>
+                            </select>
+                        </label>
+                        <label>
+                            To通貨:
+                            <select id="trade-to" name="to">
+                                <option value="Common">Common</option>
+                                <option value="A">A</option>
+                                <option value="B">B</option>
+                                <option value="C">C</option>
+                                <option value="D">D</option>
+                            </select>
+                        </label>
+                        <label>
+                            数量:
+                            <input type="number" id="trade-amount" name="amount" min="1" value="1" required>
+                        </label>
+                        <button type="submit" class="submit-btn">送信</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- ログ領域 -->
+            <div class="log-section">
+                <h4>ログ</h4>
+                <div id="log" class="log-area"></div>
+            </div>
+        </footer>
+    </div>
+
+    <script src="main.js" defer></script>
+</body>
+</html>
