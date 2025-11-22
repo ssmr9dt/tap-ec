@@ -107,6 +107,52 @@ function init() {
 
     // モックサーバーから初期状態を読み込む（実際はローカルで初期値セット）
     loadInitialState();
+    
+    // iPad/iPhoneでのダブルタップ拡大を防止
+    preventDoubleTapZoom();
+}
+
+// ダブルタップ拡大を防止する関数
+function preventDoubleTapZoom() {
+    let lastTouchEnd = 0;
+    
+    // ダブルタップを防止（インタラクティブ要素は除外）
+    document.addEventListener('touchend', function(event) {
+        // フォーム、ボタン、入力欄などのインタラクティブ要素は除外
+        if (event.target.closest('form') || 
+            event.target.closest('button') || 
+            event.target.closest('input') || 
+            event.target.closest('select') ||
+            event.target.closest('a')) {
+            return;
+        }
+        
+        const now = Date.now();
+        if (now - lastTouchEnd <= 300) {
+            event.preventDefault();
+        }
+        lastTouchEnd = now;
+    }, { passive: false });
+    
+    // gesturestartイベントを防止（iOS Safari）
+    document.addEventListener('gesturestart', function(event) {
+        event.preventDefault();
+    }, { passive: false });
+    
+    document.addEventListener('gesturechange', function(event) {
+        event.preventDefault();
+    }, { passive: false });
+    
+    document.addEventListener('gestureend', function(event) {
+        event.preventDefault();
+    }, { passive: false });
+    
+    // ピンチズームを防止
+    document.addEventListener('touchmove', function(event) {
+        if (event.touches.length > 1) {
+            event.preventDefault();
+        }
+    }, { passive: false });
 }
 
 // グループ選択

@@ -4,11 +4,27 @@
     box-sizing: border-box;
 }
 
+html {
+    height: 100%;
+    overflow: hidden;
+    touch-action: manipulation;
+    -ms-touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+
 body {
     font-family: 'Arial', 'Helvetica', sans-serif;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     min-height: 100vh;
     color: #333;
+    touch-action: manipulation;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
+    height: 100%;
 }
 
 /* モーダル（グループ選択） */
@@ -70,7 +86,9 @@ body {
 .container {
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
 }
 
 /* ヘッダー */
