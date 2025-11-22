@@ -96,6 +96,34 @@ body {
     touch-action: none;
 }
 
+/* クリックエフェクト（一画面内に収める） */
+.click-effect {
+    position: fixed;
+    width: 50px;
+    height: 50px;
+    pointer-events: none;
+    z-index: 9999;
+    background: radial-gradient(circle, rgba(255, 107, 107, 0.8) 0%, rgba(255, 107, 107, 0) 70%);
+    border-radius: 50%;
+    animation: clickPulse 0.6s ease-out forwards;
+    transform: translate(-50%, -50%);
+}
+
+@keyframes clickPulse {
+    0% {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 1;
+    }
+    50% {
+        transform: translate(-50%, -50%) scale(1.5);
+        opacity: 0.8;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(2);
+        opacity: 0;
+    }
+}
+
 /* ヘッダー */
 .header {
     display: flex;

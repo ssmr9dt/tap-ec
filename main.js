@@ -29,6 +29,8 @@ let rates = {
 };
 
 let clickCount = 0;
+let lastClickTime = 0;
+const CLICK_COOLDOWN = 200; // 0.2秒（200ミリ秒）
 
 // ============================================
 // DOM要素の取得
@@ -66,7 +68,7 @@ function init() {
     // クリックボタンのイベントリスナー
     clickButton.addEventListener('click', (e) => {
         e.stopPropagation(); // イベントの伝播を止める
-        onClickButton();
+        onClickButton(e);
     });
 
     // グループ選択モーダルのクリックイベントリスナー（最初の画面）
@@ -92,7 +94,7 @@ function init() {
             e.target.closest('a')) {
             return;
         }
-        onClickButton();
+        onClickButton(e);
     });
     
     // ゲームコンテナ全体のタッチイベント（モバイル対応）
@@ -106,7 +108,7 @@ function init() {
             return;
         }
         e.preventDefault(); // デフォルトの動作を防ぐ
-        onClickButton();
+        onClickButton(e);
     }, { passive: false });
 
     // トレードフォームのイベントリスナー
@@ -276,10 +278,40 @@ function renderRateTable() {
 // ============================================
 // イベントハンドラー
 // ============================================
-async function onClickButton() {
+async function onClickButton(event) {
+    // クリックのレート制限（0.2秒に1回）
+    const now = Date.now();
+    if (now - lastClickTime < CLICK_COOLDOWN) {
+        return; // クールダウン中は無視
+    }
+    lastClickTime = now;
+    
     if (!player.group) {
         addLog('エラー: グループが選択されていません', 'error');
         return;
+    }
+    
+    // クリック位置を取得（マウスまたはタッチ）
+    let clickX, clickY;
+    if (event) {
+        if (event.touches && event.touches.length > 0) {
+            // タッチイベント
+            clickX = event.touches[0].clientX;
+            clickY = event.touches[0].clientY;
+        } else if (event.clientX !== undefined) {
+            // マウスイベント
+            clickX = event.clientX;
+            clickY = event.clientY;
+        } else if (event.changedTouches && event.changedTouches.length > 0) {
+            // touchendイベント
+            clickX = event.changedTouches[0].clientX;
+            clickY = event.changedTouches[0].clientY;
+        }
+    }
+    
+    // クリックエフェクトを表示（一画面内に収める）
+    if (clickX !== undefined && clickY !== undefined) {
+        showClickEffect(clickX, clickY);
     }
     
     try {
@@ -299,6 +331,32 @@ async function onClickButton() {
     } catch (error) {
         addLog(`エラー: ${error.message}`, 'error');
     }
+}
+
+// クリックエフェクトを表示する関数（一画面内に収める）
+function showClickEffect(x, y) {
+    // エフェクト要素を作成
+    const effect = document.createElement('div');
+    effect.className = 'click-effect';
+    effect.style.left = `${x}px`;
+    effect.style.top = `${y}px`;
+    
+    // ビューポート内に収める（画面外に出ないように調整）
+    const rect = gameContainer.getBoundingClientRect();
+    const maxX = window.innerWidth - 50; // エフェクトのサイズを考慮
+    const maxY = window.innerHeight - 50;
+    const minX = 0;
+    const minY = 0;
+    
+    effect.style.left = `${Math.max(minX, Math.min(maxX, x - 25))}px`;
+    effect.style.top = `${Math.max(minY, Math.min(maxY, y - 25))}px`;
+    
+    document.body.appendChild(effect);
+    
+    // アニメーション後に削除
+    setTimeout(() => {
+        effect.remove();
+    }, 600);
 }
 
 async function onTradeSubmit(e) {
