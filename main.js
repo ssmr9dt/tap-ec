@@ -51,7 +51,6 @@ const tradeForm = document.getElementById('trade-form');
 const tradeFrom = document.getElementById('trade-from');
 const tradeTo = document.getElementById('trade-to');
 const tradeAmount = document.getElementById('trade-amount');
-const logArea = document.getElementById('log');
 
 // ============================================
 // 初期化関数
@@ -200,7 +199,6 @@ function selectGroup(group) {
     playerGroupDisplay.style.backgroundColor = groupColors[group];
     
     renderAll();
-    addLog(`Group ${group} を選択しました`, 'success');
 }
 
 // 初期状態の読み込み（モック）
@@ -287,7 +285,6 @@ async function onClickButton(event) {
     lastClickTime = now;
     
     if (!player.group) {
-        addLog('エラー: グループが選択されていません', 'error');
         return;
     }
     
@@ -327,9 +324,12 @@ async function onClickButton(event) {
         clickCountDisplay.textContent = clickCount;
         renderAll();
         
-        addLog(`クリック！ Group ${player.group} の資産が増加しました`, 'success');
+        // 「+1」が飛ぶアニメーションを表示
+        if (clickX !== undefined && clickY !== undefined) {
+            showFloatingText(clickX, clickY, '+1');
+        }
     } catch (error) {
-        addLog(`エラー: ${error.message}`, 'error');
+        console.error(error);
     }
 }
 
@@ -359,11 +359,33 @@ function showClickEffect(x, y) {
     }, 600);
 }
 
+// 「+1」が飛ぶアニメーションを表示する関数
+function showFloatingText(x, y, text) {
+    const floatingText = document.createElement('div');
+    floatingText.className = 'floating-text';
+    floatingText.textContent = text;
+    
+    // ビューポート内に収める（画面外に出ないように調整）
+    const maxX = window.innerWidth - 100;
+    const maxY = window.innerHeight - 100;
+    const minX = 0;
+    const minY = 0;
+    
+    floatingText.style.left = `${Math.max(minX, Math.min(maxX, x))}px`;
+    floatingText.style.top = `${Math.max(minY, Math.min(maxY, y))}px`;
+    
+    document.body.appendChild(floatingText);
+    
+    // アニメーション後に削除
+    setTimeout(() => {
+        floatingText.remove();
+    }, 1000);
+}
+
 async function onTradeSubmit(e) {
     e.preventDefault();
     
     if (!player.group) {
-        addLog('エラー: グループが選択されていません', 'error');
         return;
     }
     
@@ -372,12 +394,10 @@ async function onTradeSubmit(e) {
     const amount = parseInt(tradeAmount.value);
     
     if (from === to) {
-        addLog('エラー: From通貨とTo通貨が同じです', 'error');
         return;
     }
     
     if (amount <= 0) {
-        addLog('エラー: 数量は1以上を指定してください', 'error');
         return;
     }
     
@@ -393,12 +413,10 @@ async function onTradeSubmit(e) {
         // UIを更新
         renderAll();
         
-        addLog(`トレード成功: ${amount} ${from} → ${to}`, 'success');
-        
         // フォームをリセット
         tradeAmount.value = '1';
     } catch (error) {
-        addLog(`エラー: ${error.message}`, 'error');
+        console.error(error);
     }
 }
 
@@ -497,24 +515,6 @@ async function mockTrade(player, from, to, amount, rates) {
             });
         }, 100);
     });
-}
-
-// ============================================
-// ログ機能
-// ============================================
-function addLog(message, type = 'info') {
-    const logEntry = document.createElement('div');
-    logEntry.className = `log-entry ${type}`;
-    
-    const timestamp = new Date().toLocaleTimeString();
-    logEntry.textContent = `[${timestamp}] ${message}`;
-    
-    logArea.insertBefore(logEntry, logArea.firstChild);
-    
-    // ログが多すぎる場合は古いものを削除
-    while (logArea.children.length > 20) {
-        logArea.removeChild(logArea.lastChild);
-    }
 }
 
 // ============================================

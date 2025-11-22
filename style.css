@@ -371,44 +371,32 @@ body {
     background: #4457c1;
 }
 
-/* ログ領域 */
-.log-section {
-    margin-top: 20px;
+/* 「+1」が飛ぶアニメーション */
+.floating-text {
+    position: fixed;
+    pointer-events: none;
+    z-index: 10000;
+    font-size: 2rem;
+    font-weight: bold;
+    color: #ff6b6b;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    animation: floatUp 1s ease-out forwards;
+    transform: translate(-50%, -50%);
 }
 
-.log-section h4 {
-    margin-bottom: 10px;
-    color: #333;
-    font-size: 1.1rem;
-}
-
-.log-area {
-    background: #f5f5f5;
-    padding: 15px;
-    border-radius: 8px;
-    max-height: 150px;
-    overflow-y: auto;
-    font-family: 'Courier New', monospace;
-    font-size: 0.9rem;
-    line-height: 1.6;
-    touch-action: pan-y;
-}
-
-.log-entry {
-    margin-bottom: 5px;
-    padding: 5px;
-    border-left: 3px solid #667eea;
-    padding-left: 10px;
-}
-
-.log-entry.error {
-    border-left-color: #ff6b6b;
-    color: #d63031;
-}
-
-.log-entry.success {
-    border-left-color: #00b894;
-    color: #00b894;
+@keyframes floatUp {
+    0% {
+        transform: translate(-50%, -50%) translateY(0) scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: translate(-50%, -50%) translateY(-30px) scale(1.2);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(-50%, -50%) translateY(-60px) scale(0.8);
+        opacity: 0;
+    }
 }
 
 /* レスポンシブ対応 */
