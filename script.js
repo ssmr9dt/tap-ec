@@ -2,6 +2,15 @@ let score = 0;
 const gameArea = document.getElementById('gameArea');
 const scoreDisplay = document.getElementById('score');
 const instruction = document.querySelector('.instruction');
+const centerImage = document.getElementById('centerImage');
+
+// 画像が見つからない場合の処理
+if (centerImage) {
+    centerImage.addEventListener('error', function() {
+        this.style.display = 'none';
+        console.log('画像が見つかりません。image.pngファイルを追加してください。');
+    });
+}
 
 // スコアを更新する関数
 function updateScore() {
@@ -62,6 +71,14 @@ function handleClick(event) {
     updateScore();
     createPointText(x, y);
     createRipple(x, y);
+    
+    // 画像のパルスアニメーション
+    if (centerImage) {
+        centerImage.classList.add('pulse');
+        setTimeout(() => {
+            centerImage.classList.remove('pulse');
+        }, 300);
+    }
 }
 
 // イベントリスナーの設定
