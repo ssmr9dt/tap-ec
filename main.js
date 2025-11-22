@@ -39,7 +39,6 @@ const groupSelectModal = document.getElementById('group-select-modal');
 const gameContainer = document.getElementById('game-container');
 const mainContent = document.querySelector('.main-content');
 const header = document.querySelector('.header');
-const footer = document.querySelector('.footer');
 const groupButtons = document.querySelectorAll('.group-btn');
 const clickButton = document.getElementById('click-button');
 const clickCountDisplay = document.getElementById('click-count');
@@ -51,6 +50,10 @@ const tradeForm = document.getElementById('trade-form');
 const tradeFrom = document.getElementById('trade-from');
 const tradeTo = document.getElementById('trade-to');
 const tradeAmount = document.getElementById('trade-amount');
+const tradeModal = document.getElementById('trade-modal');
+const tradeButton = document.getElementById('trade-button');
+const closeTradeModal = document.getElementById('close-trade-modal');
+const cancelTrade = document.getElementById('cancel-trade');
 
 // ============================================
 // 初期化関数
@@ -90,13 +93,14 @@ function init() {
 
     // ゲームコンテナ全体のクリックイベントリスナー（一画面全体）
     gameContainer.addEventListener('click', (e) => {
-        // フォーム、ボタン、テーブル、リンクなどのインタラクティブ要素をクリックした場合は無視
+        // フォーム、ボタン、テーブル、リンク、モーダルなどのインタラクティブ要素をクリックした場合は無視
         if (e.target.closest('form') || 
             e.target.closest('button') || 
             e.target.closest('input') || 
             e.target.closest('select') ||
             e.target.closest('table') ||
-            e.target.closest('a')) {
+            e.target.closest('a') ||
+            e.target.closest('.modal')) {
             return;
         }
         // クリック位置を確実に取得
@@ -116,7 +120,8 @@ function init() {
             e.target.closest('input') || 
             e.target.closest('select') ||
             e.target.closest('table') ||
-            e.target.closest('a')) {
+            e.target.closest('a') ||
+            e.target.closest('.modal')) {
             return;
         }
         e.preventDefault(); // デフォルトの動作を防ぐ
@@ -131,6 +136,33 @@ function init() {
 
     // トレードフォームのイベントリスナー
     tradeForm.addEventListener('submit', onTradeSubmit);
+
+    // トレードモーダルの開閉イベントリスナー
+    tradeButton.addEventListener('click', () => {
+        tradeModal.style.display = 'flex';
+    });
+
+    closeTradeModal.addEventListener('click', () => {
+        tradeModal.style.display = 'none';
+    });
+
+    cancelTrade.addEventListener('click', () => {
+        tradeModal.style.display = 'none';
+    });
+
+    // モーダル外クリックで閉じる
+    tradeModal.addEventListener('click', (e) => {
+        if (e.target === tradeModal) {
+            tradeModal.style.display = 'none';
+        }
+    });
+
+    // ESCキーでモーダルを閉じる
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && tradeModal.style.display === 'flex') {
+            tradeModal.style.display = 'none';
+        }
+    });
 
     // モックサーバーから初期状態を読み込む（実際はローカルで初期値セット）
     loadInitialState();
@@ -458,8 +490,12 @@ async function onTradeSubmit(e) {
         
         // フォームをリセット
         tradeAmount.value = '1';
+        
+        // モーダルを閉じる
+        tradeModal.style.display = 'none';
     } catch (error) {
         console.error(error);
+        alert(error.message); // エラーメッセージを表示
     }
 }
 

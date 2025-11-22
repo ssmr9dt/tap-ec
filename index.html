@@ -34,6 +34,7 @@
                 <div class="player-info">
                     <span id="player-group" class="player-group"></span>
                     <span id="player-common" class="player-currency">Common: <span id="player-common-value">0</span></span>
+                    <button id="trade-button" class="trade-button">トレード</button>
                 </div>
             </div>
         </header>
@@ -81,43 +82,48 @@
                 </div>
             </div>
         </main>
+    </div>
 
-        <!-- 下部エリア：トレードフォームとログ -->
-        <footer class="footer">
-            <!-- トレードフォーム -->
-            <div class="trade-section">
-                <h3>トレード</h3>
-                <form id="trade-form" class="trade-form">
-                    <div class="form-row">
-                        <label>
-                            From通貨:
-                            <select id="trade-from" name="from">
-                                <option value="Common">Common</option>
-                                <option value="A">A</option>
-                                <option value="B">B</option>
-                                <option value="C">C</option>
-                                <option value="D">D</option>
-                            </select>
-                        </label>
-                        <label>
-                            To通貨:
-                            <select id="trade-to" name="to">
-                                <option value="Common">Common</option>
-                                <option value="A">A</option>
-                                <option value="B">B</option>
-                                <option value="C">C</option>
-                                <option value="D">D</option>
-                            </select>
-                        </label>
-                        <label>
-                            数量:
-                            <input type="number" id="trade-amount" name="amount" min="1" value="1" required>
-                        </label>
-                        <button type="submit" class="submit-btn">送信</button>
-                    </div>
-                </form>
+    <!-- トレードモーダル -->
+    <div id="trade-modal" class="modal" style="display: none;">
+        <div class="modal-content trade-modal-content">
+            <div class="modal-header">
+                <h2>トレード</h2>
+                <button id="close-trade-modal" class="close-button">×</button>
             </div>
-        </footer>
+            <form id="trade-form" class="trade-form">
+                <div class="form-row">
+                    <label>
+                        From通貨:
+                        <select id="trade-from" name="from">
+                            <option value="Common">Common</option>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                            <option value="D">D</option>
+                        </select>
+                    </label>
+                    <label>
+                        To通貨:
+                        <select id="trade-to" name="to">
+                            <option value="Common">Common</option>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                            <option value="D">D</option>
+                        </select>
+                    </label>
+                    <label>
+                        数量:
+                        <input type="number" id="trade-amount" name="amount" min="1" value="1" required>
+                    </label>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="submit-btn">送信</button>
+                    <button type="button" id="cancel-trade" class="cancel-btn">キャンセル</button>
+                </div>
+            </form>
+        </div>
     </div>
 
     <script src="main.js" defer></script>
