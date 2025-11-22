@@ -43,7 +43,6 @@ const groupButtons = document.querySelectorAll('.group-btn');
 const clickButton = document.getElementById('click-button');
 const clickCountDisplay = document.getElementById('click-count');
 const playerGroupDisplay = document.getElementById('player-group');
-const playerCommonValue = document.getElementById('player-common-value');
 const groupTableBody = document.getElementById('group-table-body');
 const rateTableBody = document.getElementById('rate-table-body');
 const tradeForm = document.getElementById('trade-form');
@@ -316,7 +315,6 @@ function renderAll() {
 function renderPlayerInfo() {
     if (player.group) {
         playerGroupDisplay.textContent = `Group ${player.group}`;
-        playerCommonValue.textContent = player.commonCurrency.toLocaleString();
     }
 }
 
