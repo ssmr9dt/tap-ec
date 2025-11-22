@@ -67,6 +67,12 @@ function init() {
     // クリックボタンのイベントリスナー
     clickButton.addEventListener('click', (e) => {
         e.stopPropagation(); // イベントの伝播を止める
+        // クリックボタンの中心位置を取得
+        const rect = clickButton.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        e.clientX = centerX;
+        e.clientY = centerY;
         onClickButton(e);
     });
 
@@ -295,7 +301,7 @@ async function onClickButton(event) {
             // タッチイベント
             clickX = event.touches[0].clientX;
             clickY = event.touches[0].clientY;
-        } else if (event.clientX !== undefined) {
+        } else if (event.clientX !== undefined && event.clientY !== undefined) {
             // マウスイベント
             clickX = event.clientX;
             clickY = event.clientY;
@@ -306,10 +312,14 @@ async function onClickButton(event) {
         }
     }
     
-    // クリックエフェクトを表示（一画面内に収める）
-    if (clickX !== undefined && clickY !== undefined) {
-        showClickEffect(clickX, clickY);
+    // クリック位置が取得できない場合は画面中央を使用
+    if (clickX === undefined || clickY === undefined) {
+        clickX = window.innerWidth / 2;
+        clickY = window.innerHeight / 2;
     }
+    
+    // クリックエフェクトを表示（一画面内に収める）
+    showClickEffect(clickX, clickY);
     
     try {
         // モックAPIを呼び出し
@@ -325,9 +335,7 @@ async function onClickButton(event) {
         renderAll();
         
         // 「+1」が飛ぶアニメーションを表示
-        if (clickX !== undefined && clickY !== undefined) {
-            showFloatingText(clickX, clickY, '+1');
-        }
+        showFloatingText(clickX, clickY, '+1');
     } catch (error) {
         console.error(error);
     }
@@ -338,24 +346,26 @@ function showClickEffect(x, y) {
     // エフェクト要素を作成
     const effect = document.createElement('div');
     effect.className = 'click-effect';
-    effect.style.left = `${x}px`;
-    effect.style.top = `${y}px`;
     
     // ビューポート内に収める（画面外に出ないように調整）
-    const rect = gameContainer.getBoundingClientRect();
-    const maxX = window.innerWidth - 50; // エフェクトのサイズを考慮
-    const maxY = window.innerHeight - 50;
-    const minX = 0;
-    const minY = 0;
+    const maxX = window.innerWidth - 40;
+    const maxY = window.innerHeight - 40;
+    const minX = 40;
+    const minY = 40;
     
-    effect.style.left = `${Math.max(minX, Math.min(maxX, x - 25))}px`;
-    effect.style.top = `${Math.max(minY, Math.min(maxY, y - 25))}px`;
+    const adjustedX = Math.max(minX, Math.min(maxX, x));
+    const adjustedY = Math.max(minY, Math.min(maxY, y));
+    
+    effect.style.left = `${adjustedX}px`;
+    effect.style.top = `${adjustedY}px`;
     
     document.body.appendChild(effect);
     
     // アニメーション後に削除
     setTimeout(() => {
-        effect.remove();
+        if (effect.parentNode) {
+            effect.remove();
+        }
     }, 600);
 }
 
