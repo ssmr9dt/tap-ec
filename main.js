@@ -35,6 +35,9 @@ let clickCount = 0;
 // ============================================
 const groupSelectModal = document.getElementById('group-select-modal');
 const gameContainer = document.getElementById('game-container');
+const mainContent = document.querySelector('.main-content');
+const header = document.querySelector('.header');
+const footer = document.querySelector('.footer');
 const groupButtons = document.querySelectorAll('.group-btn');
 const clickButton = document.getElementById('click-button');
 const clickCountDisplay = document.getElementById('click-count');
@@ -61,7 +64,43 @@ function init() {
     });
 
     // クリックボタンのイベントリスナー
-    clickButton.addEventListener('click', onClickButton);
+    clickButton.addEventListener('click', (e) => {
+        e.stopPropagation(); // イベントの伝播を止める
+        onClickButton();
+    });
+
+    // 画面全体のクリックイベントリスナー（クリック可能な要素を設定）
+    const clickableElements = [mainContent, header, footer].filter(el => el !== null);
+    
+    clickableElements.forEach(element => {
+        // クリックイベント
+        element.addEventListener('click', (e) => {
+            // フォーム、ボタン、テーブル、リンクなどのインタラクティブ要素をクリックした場合は無視
+            if (e.target.closest('form') || 
+                e.target.closest('button') || 
+                e.target.closest('input') || 
+                e.target.closest('select') ||
+                e.target.closest('table') ||
+                e.target.closest('a')) {
+                return;
+            }
+            onClickButton();
+        });
+        
+        // タッチイベントも追加（モバイル対応）
+        element.addEventListener('touchend', (e) => {
+            if (e.target.closest('form') || 
+                e.target.closest('button') || 
+                e.target.closest('input') || 
+                e.target.closest('select') ||
+                e.target.closest('table') ||
+                e.target.closest('a')) {
+                return;
+            }
+            e.preventDefault(); // デフォルトの動作を防ぐ
+            onClickButton();
+        }, { passive: false });
+    });
 
     // トレードフォームのイベントリスナー
     tradeForm.addEventListener('submit', onTradeSubmit);
