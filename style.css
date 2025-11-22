@@ -512,61 +512,92 @@ body::before {
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    align-items: center;
+    justify-content: center;
+    gap: 30px;
 }
 
-.info-section {
-    background: linear-gradient(135deg, rgba(26, 31, 58, 0.95) 0%, rgba(45, 27, 78, 0.95) 100%);
-    padding: 25px;
+.info-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    width: 100%;
+    max-width: 400px;
+}
+
+.info-button {
+    padding: 25px 40px;
+    font-size: 1.2rem;
+    font-weight: 900;
+    font-family: 'Press Start 2P', cursive;
+    color: white;
+    background: linear-gradient(135deg, rgba(120, 119, 198, 0.8) 0%, rgba(78, 205, 196, 0.8) 100%);
+    border: 4px solid rgba(255, 255, 255, 0.3);
     border-radius: 0;
+    cursor: pointer;
+    transition: all 0.2s;
+    touch-action: manipulation;
+    text-transform: uppercase;
+    letter-spacing: 2px;
     box-shadow: 
-        0 0 30px rgba(0, 0, 0, 0.6),
-        inset 0 0 30px rgba(255, 255, 255, 0.05),
-        0 4px 20px rgba(0, 0, 0, 0.4);
-    border: 3px solid rgba(120, 119, 198, 0.3);
+        0 0 20px rgba(0, 0, 0, 0.5),
+        inset 0 0 20px rgba(255, 255, 255, 0.1);
     position: relative;
+    overflow: hidden;
+    width: 100%;
 }
 
-.info-section::before {
+.info-button::before {
     content: '';
     position: absolute;
     top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, transparent, rgba(120, 119, 198, 0.6), transparent);
-    animation: topGlow 2s ease-in-out infinite;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s;
 }
 
-@keyframes topGlow {
-    0%, 100% { opacity: 0.3; }
-    50% { opacity: 1; }
+.info-button:hover::before {
+    left: 100%;
 }
 
-.info-section h3 {
-    margin-bottom: 20px;
-    color: #fff;
-    font-size: 1.5rem;
-    font-family: 'Press Start 2P', cursive;
-    text-shadow: 
-        0 0 10px rgba(120, 119, 198, 0.8),
-        0 0 20px rgba(120, 119, 198, 0.5);
-    letter-spacing: 2px;
-    font-size: 1rem;
+.info-button:hover {
+    background: linear-gradient(135deg, rgba(120, 119, 198, 1) 0%, rgba(78, 205, 196, 1) 100%);
+    box-shadow: 
+        0 0 30px rgba(120, 119, 198, 0.6),
+        0 10px 30px rgba(0, 0, 0, 0.6),
+        inset 0 0 30px rgba(255, 255, 255, 0.2);
+    transform: translateY(-5px) scale(1.05);
+    border-color: rgba(255, 255, 255, 0.6);
 }
+
+.info-button:active {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 
+        0 0 20px rgba(120, 119, 198, 0.4),
+        0 5px 15px rgba(0, 0, 0, 0.5),
+        inset 0 0 20px rgba(255, 255, 255, 0.15);
+}
+
 
 .data-table {
     width: 100%;
     border-collapse: collapse;
+    background: linear-gradient(135deg, rgba(10, 14, 39, 0.6) 0%, rgba(26, 31, 58, 0.6) 100%);
+    border: 3px solid rgba(120, 119, 198, 0.3);
+    box-shadow: 
+        0 0 20px rgba(0, 0, 0, 0.5),
+        inset 0 0 20px rgba(255, 255, 255, 0.05);
 }
 
 .data-table thead {
-    background: linear-gradient(135deg, rgba(120, 119, 198, 0.3) 0%, rgba(78, 205, 196, 0.3) 100%);
+    background: linear-gradient(135deg, rgba(120, 119, 198, 0.4) 0%, rgba(78, 205, 196, 0.4) 100%);
 }
 
 .data-table th,
 .data-table td {
-    padding: 15px;
+    padding: 20px;
     text-align: left;
     border-bottom: 2px solid rgba(255, 255, 255, 0.1);
     color: #fff;
@@ -576,10 +607,19 @@ body::before {
     font-weight: 900;
     font-family: 'Press Start 2P', cursive;
     color: #fff;
-    font-size: 0.7rem;
+    font-size: 0.8rem;
     text-transform: uppercase;
-    letter-spacing: 1px;
-    text-shadow: 0 0 10px rgba(120, 119, 198, 0.8);
+    letter-spacing: 2px;
+    text-shadow: 
+        0 0 10px rgba(120, 119, 198, 0.8),
+        0 0 20px rgba(120, 119, 198, 0.5);
+}
+
+.data-table td {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    font-size: 1.1rem;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
 }
 
 .data-table tbody tr {
@@ -587,9 +627,15 @@ body::before {
 }
 
 .data-table tbody tr:hover {
-    background: rgba(120, 119, 198, 0.2);
-    box-shadow: 0 0 15px rgba(120, 119, 198, 0.4);
+    background: rgba(120, 119, 198, 0.3);
+    box-shadow: 
+        0 0 20px rgba(120, 119, 198, 0.5),
+        inset 0 0 20px rgba(255, 255, 255, 0.1);
     transform: translateX(5px);
+}
+
+.data-table tbody tr:last-child td {
+    border-bottom: none;
 }
 
 .group-badge {
@@ -648,6 +694,19 @@ body::before {
     max-height: 90vh;
     overflow-y: auto;
     animation: modalSlideIn 0.3s ease-out;
+}
+
+/* 情報モーダル（グループ総資産・為替レート） */
+.info-modal-content {
+    max-width: 700px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: modalSlideIn 0.3s ease-out;
+}
+
+.modal-body {
+    padding: 0;
 }
 
 @keyframes modalSlideIn {
@@ -964,7 +1023,8 @@ body::before {
         padding: 10px 20px;
     }
 
-    .trade-modal-content {
+    .trade-modal-content,
+    .info-modal-content {
         width: 95%;
         padding: 30px 20px;
     }
@@ -976,5 +1036,24 @@ body::before {
     .form-actions .submit-btn,
     .form-actions .cancel-btn {
         width: 100%;
+    }
+
+    .info-buttons {
+        max-width: 100%;
+    }
+
+    .info-button {
+        font-size: 0.9rem;
+        padding: 20px 30px;
+    }
+
+    .data-table th {
+        font-size: 0.6rem;
+        padding: 15px;
+    }
+
+    .data-table td {
+        font-size: 0.9rem;
+        padding: 15px;
     }
 }

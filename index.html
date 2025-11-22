@@ -49,36 +49,11 @@
                 </div>
             </div>
 
-            <!-- 右カラム：グループ情報と為替レート -->
+            <!-- 右カラム：情報ボタン -->
             <div class="right-column">
-                <!-- グループ総資産テーブル -->
-                <div class="info-section">
-                    <h3>グループ総資産</h3>
-                    <table id="group-table" class="data-table">
-                        <thead>
-                            <tr>
-                                <th>グループ</th>
-                                <th>総資産</th>
-                            </tr>
-                        </thead>
-                        <tbody id="group-table-body">
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- 為替レートテーブル -->
-                <div class="info-section">
-                    <h3>為替レート</h3>
-                    <table id="rate-table" class="data-table">
-                        <thead>
-                            <tr>
-                                <th>通貨ペア</th>
-                                <th>レート</th>
-                            </tr>
-                        </thead>
-                        <tbody id="rate-table-body">
-                        </tbody>
-                    </table>
+                <div class="info-buttons">
+                    <button id="group-wealth-button" class="info-button">グループ総資産</button>
+                    <button id="exchange-rate-button" class="info-button">為替レート</button>
                 </div>
             </div>
         </main>
@@ -123,6 +98,50 @@
                     <button type="button" id="cancel-trade" class="cancel-btn">キャンセル</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- グループ総資産モーダル -->
+    <div id="group-wealth-modal" class="modal" style="display: none;">
+        <div class="modal-content info-modal-content">
+            <div class="modal-header">
+                <h2>グループ総資産</h2>
+                <button id="close-group-wealth-modal" class="close-button">×</button>
+            </div>
+            <div class="modal-body">
+                <table id="group-table" class="data-table">
+                    <thead>
+                        <tr>
+                            <th>グループ</th>
+                            <th>総資産</th>
+                        </tr>
+                    </thead>
+                    <tbody id="group-table-body">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- 為替レートモーダル -->
+    <div id="exchange-rate-modal" class="modal" style="display: none;">
+        <div class="modal-content info-modal-content">
+            <div class="modal-header">
+                <h2>為替レート</h2>
+                <button id="close-exchange-rate-modal" class="close-button">×</button>
+            </div>
+            <div class="modal-body">
+                <table id="rate-table" class="data-table">
+                    <thead>
+                        <tr>
+                            <th>通貨ペア</th>
+                            <th>レート</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rate-table-body">
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 

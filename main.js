@@ -54,6 +54,12 @@ const tradeModal = document.getElementById('trade-modal');
 const tradeButton = document.getElementById('trade-button');
 const closeTradeModal = document.getElementById('close-trade-modal');
 const cancelTrade = document.getElementById('cancel-trade');
+const groupWealthModal = document.getElementById('group-wealth-modal');
+const groupWealthButton = document.getElementById('group-wealth-button');
+const closeGroupWealthModal = document.getElementById('close-group-wealth-modal');
+const exchangeRateModal = document.getElementById('exchange-rate-modal');
+const exchangeRateButton = document.getElementById('exchange-rate-button');
+const closeExchangeRateModal = document.getElementById('close-exchange-rate-modal');
 
 // ============================================
 // 初期化関数
@@ -157,10 +163,50 @@ function init() {
         }
     });
 
+    // グループ総資産モーダルの開閉イベントリスナー
+    groupWealthButton.addEventListener('click', () => {
+        groupWealthModal.style.display = 'flex';
+    });
+
+    closeGroupWealthModal.addEventListener('click', () => {
+        groupWealthModal.style.display = 'none';
+    });
+
+    // グループ総資産モーダル外クリックで閉じる
+    groupWealthModal.addEventListener('click', (e) => {
+        if (e.target === groupWealthModal) {
+            groupWealthModal.style.display = 'none';
+        }
+    });
+
+    // 為替レートモーダルの開閉イベントリスナー
+    exchangeRateButton.addEventListener('click', () => {
+        exchangeRateModal.style.display = 'flex';
+    });
+
+    closeExchangeRateModal.addEventListener('click', () => {
+        exchangeRateModal.style.display = 'none';
+    });
+
+    // 為替レートモーダル外クリックで閉じる
+    exchangeRateModal.addEventListener('click', (e) => {
+        if (e.target === exchangeRateModal) {
+            exchangeRateModal.style.display = 'none';
+        }
+    });
+
     // ESCキーでモーダルを閉じる
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && tradeModal.style.display === 'flex') {
-            tradeModal.style.display = 'none';
+        if (e.key === 'Escape') {
+            if (tradeModal.style.display === 'flex') {
+                tradeModal.style.display = 'none';
+            }
+            if (groupWealthModal.style.display === 'flex') {
+                groupWealthModal.style.display = 'none';
+            }
+            if (exchangeRateModal.style.display === 'flex') {
+                exchangeRateModal.style.display = 'none';
+            }
         }
     });
 
