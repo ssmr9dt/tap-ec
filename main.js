@@ -99,7 +99,14 @@ function init() {
             e.target.closest('a')) {
             return;
         }
-        onClickButton(e);
+        // クリック位置を確実に取得
+        const clickEvent = {
+            clientX: e.clientX,
+            clientY: e.clientY,
+            pageX: e.pageX,
+            pageY: e.pageY
+        };
+        onClickButton(clickEvent);
     });
     
     // ゲームコンテナ全体のタッチイベント（モバイル対応）
@@ -113,7 +120,13 @@ function init() {
             return;
         }
         e.preventDefault(); // デフォルトの動作を防ぐ
-        onClickButton(e);
+        // タッチ位置を確実に取得
+        const touchEvent = {
+            changedTouches: e.changedTouches,
+            clientX: e.changedTouches && e.changedTouches[0] ? e.changedTouches[0].clientX : undefined,
+            clientY: e.changedTouches && e.changedTouches[0] ? e.changedTouches[0].clientY : undefined
+        };
+        onClickButton(touchEvent);
     }, { passive: false });
 
     // トレードフォームのイベントリスナー
@@ -297,23 +310,30 @@ async function onClickButton(event) {
     // クリック位置を取得（マウスまたはタッチ）
     let clickX, clickY;
     if (event) {
-        if (event.touches && event.touches.length > 0) {
-            // タッチイベント
-            clickX = event.touches[0].clientX;
-            clickY = event.touches[0].clientY;
-        } else if (event.clientX !== undefined && event.clientY !== undefined) {
-            // マウスイベント
-            clickX = event.clientX;
-            clickY = event.clientY;
-        } else if (event.changedTouches && event.changedTouches.length > 0) {
-            // touchendイベント
+        // touchendイベントの場合（タッチ終了）
+        if (event.changedTouches && event.changedTouches.length > 0) {
             clickX = event.changedTouches[0].clientX;
             clickY = event.changedTouches[0].clientY;
+        }
+        // touchstart/touchmoveイベントの場合（タッチ中）
+        else if (event.touches && event.touches.length > 0) {
+            clickX = event.touches[0].clientX;
+            clickY = event.touches[0].clientY;
+        }
+        // マウスイベントの場合
+        else if (typeof event.clientX === 'number' && typeof event.clientY === 'number') {
+            clickX = event.clientX;
+            clickY = event.clientY;
+        }
+        // pageX/pageYをフォールバックとして使用
+        else if (typeof event.pageX === 'number' && typeof event.pageY === 'number') {
+            clickX = event.pageX;
+            clickY = event.pageY;
         }
     }
     
     // クリック位置が取得できない場合は画面中央を使用
-    if (clickX === undefined || clickY === undefined) {
+    if (clickX === undefined || clickY === undefined || isNaN(clickX) || isNaN(clickY)) {
         clickX = window.innerWidth / 2;
         clickY = window.innerHeight / 2;
     }
