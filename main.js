@@ -147,12 +147,32 @@ function preventDoubleTapZoom() {
         event.preventDefault();
     }, { passive: false });
     
-    // ピンチズームを防止
+    // ピンチズームを防止（2本指以上のタッチを防止）
+    document.addEventListener('touchstart', function(event) {
+        if (event.touches.length > 1) {
+            event.preventDefault();
+        }
+    }, { passive: false });
+    
     document.addEventListener('touchmove', function(event) {
         if (event.touches.length > 1) {
             event.preventDefault();
         }
     }, { passive: false });
+    
+    // wheelイベントでズームを防止（マウスホイール）
+    document.addEventListener('wheel', function(event) {
+        if (event.ctrlKey) {
+            event.preventDefault();
+        }
+    }, { passive: false });
+    
+    // キーボードショートカットでのズームを防止
+    document.addEventListener('keydown', function(event) {
+        if ((event.ctrlKey || event.metaKey) && (event.key === '+' || event.key === '-' || event.key === '=' || event.key === '0')) {
+            event.preventDefault();
+        }
+    });
 }
 
 // グループ選択
