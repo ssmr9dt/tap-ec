@@ -105,7 +105,10 @@ function init() {
             e.target.closest('select') ||
             e.target.closest('table') ||
             e.target.closest('a') ||
-            e.target.closest('.modal')) {
+            e.target.closest('.modal') ||
+            e.target.closest('#trade-modal') ||
+            e.target.closest('#group-wealth-modal') ||
+            e.target.closest('#exchange-rate-modal')) {
             return;
         }
         // クリック位置を確実に取得
@@ -143,56 +146,94 @@ function init() {
     tradeForm.addEventListener('submit', onTradeSubmit);
 
     // トレードモーダルの開閉イベントリスナー
-    tradeButton.addEventListener('click', () => {
-        tradeModal.style.display = 'flex';
-    });
+    if (tradeButton && tradeModal) {
+        tradeButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('Trade button clicked');
+            tradeModal.style.display = 'flex';
+            console.log('Trade modal display:', tradeModal.style.display);
+        });
+    } else {
+        console.error('Trade button or modal not found:', { tradeButton, tradeModal });
+    }
 
-    closeTradeModal.addEventListener('click', () => {
-        tradeModal.style.display = 'none';
-    });
+    if (closeTradeModal && tradeModal) {
+        closeTradeModal.addEventListener('click', () => {
+            tradeModal.style.display = 'none';
+        });
+    }
 
-    cancelTrade.addEventListener('click', () => {
-        tradeModal.style.display = 'none';
-    });
+    if (cancelTrade && tradeModal) {
+        cancelTrade.addEventListener('click', () => {
+            tradeModal.style.display = 'none';
+        });
+    }
 
     // モーダル外クリックで閉じる
-    tradeModal.addEventListener('click', (e) => {
-        if (e.target === tradeModal) {
-            tradeModal.style.display = 'none';
-        }
-    });
+    if (tradeModal) {
+        tradeModal.addEventListener('click', (e) => {
+            if (e.target === tradeModal) {
+                tradeModal.style.display = 'none';
+            }
+        });
+    }
 
     // グループ総資産モーダルの開閉イベントリスナー
-    groupWealthButton.addEventListener('click', () => {
-        groupWealthModal.style.display = 'flex';
-    });
+    if (groupWealthButton && groupWealthModal) {
+        groupWealthButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('Group wealth button clicked');
+            groupWealthModal.style.display = 'flex';
+            console.log('Group wealth modal display:', groupWealthModal.style.display);
+        });
+    } else {
+        console.error('Group wealth button or modal not found:', { groupWealthButton, groupWealthModal });
+    }
 
-    closeGroupWealthModal.addEventListener('click', () => {
-        groupWealthModal.style.display = 'none';
-    });
+    if (closeGroupWealthModal && groupWealthModal) {
+        closeGroupWealthModal.addEventListener('click', () => {
+            groupWealthModal.style.display = 'none';
+        });
+    }
 
     // グループ総資産モーダル外クリックで閉じる
-    groupWealthModal.addEventListener('click', (e) => {
-        if (e.target === groupWealthModal) {
-            groupWealthModal.style.display = 'none';
-        }
-    });
+    if (groupWealthModal) {
+        groupWealthModal.addEventListener('click', (e) => {
+            if (e.target === groupWealthModal) {
+                groupWealthModal.style.display = 'none';
+            }
+        });
+    }
 
     // 為替レートモーダルの開閉イベントリスナー
-    exchangeRateButton.addEventListener('click', () => {
-        exchangeRateModal.style.display = 'flex';
-    });
+    if (exchangeRateButton && exchangeRateModal) {
+        exchangeRateButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('Exchange rate button clicked');
+            exchangeRateModal.style.display = 'flex';
+            console.log('Exchange rate modal display:', exchangeRateModal.style.display);
+        });
+    } else {
+        console.error('Exchange rate button or modal not found:', { exchangeRateButton, exchangeRateModal });
+    }
 
-    closeExchangeRateModal.addEventListener('click', () => {
-        exchangeRateModal.style.display = 'none';
-    });
+    if (closeExchangeRateModal && exchangeRateModal) {
+        closeExchangeRateModal.addEventListener('click', () => {
+            exchangeRateModal.style.display = 'none';
+        });
+    }
 
     // 為替レートモーダル外クリックで閉じる
-    exchangeRateModal.addEventListener('click', (e) => {
-        if (e.target === exchangeRateModal) {
-            exchangeRateModal.style.display = 'none';
-        }
-    });
+    if (exchangeRateModal) {
+        exchangeRateModal.addEventListener('click', (e) => {
+            if (e.target === exchangeRateModal) {
+                exchangeRateModal.style.display = 'none';
+            }
+        });
+    }
 
     // ESCキーでモーダルを閉じる
     document.addEventListener('keydown', (e) => {
@@ -649,3 +690,11 @@ if (document.readyState === 'loading') {
 } else {
     init();
 }
+
+// デバッグ用：モーダル要素の確認
+console.log('Trade Modal:', tradeModal);
+console.log('Trade Button:', tradeButton);
+console.log('Group Wealth Modal:', groupWealthModal);
+console.log('Group Wealth Button:', groupWealthButton);
+console.log('Exchange Rate Modal:', exchangeRateModal);
+console.log('Exchange Rate Button:', exchangeRateButton);

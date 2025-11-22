@@ -59,7 +59,7 @@ body::before {
     100% { background-position: 100% 100%; }
 }
 
-/* モーダル（グループ選択） */
+/* モーダル（グループ選択・トレード・情報） */
 .modal {
     position: fixed;
     top: 0;
@@ -707,6 +707,12 @@ body::before {
 
 .modal-body {
     padding: 0;
+}
+
+/* モーダルが表示されている時のスタイル */
+.modal[style*="display: flex"],
+.modal[style*="display:flex"] {
+    display: flex !important;
 }
 
 @keyframes modalSlideIn {
