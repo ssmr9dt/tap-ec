@@ -414,6 +414,21 @@ function selectGroup(group) {
         playerGroupDisplay.style.backgroundColor = groupColors[group];
     }
     
+    // クリックボタンにグループクラスを追加
+    const clickButton = document.getElementById('click-button');
+    if (clickButton) {
+        // 既存のグループクラスを削除
+        clickButton.classList.remove('group-ruby', 'group-sapphire', 'group-emerald', 'group-topaz');
+        // 新しいグループクラスを追加
+        const groupClassMap = {
+            A: 'group-ruby',
+            B: 'group-sapphire',
+            C: 'group-emerald',
+            D: 'group-topaz'
+        };
+        clickButton.classList.add(groupClassMap[group]);
+    }
+    
     renderAll();
     
     // 状態を保存
@@ -431,6 +446,21 @@ function loadInitialState() {
         // プレイヤーグループの色を設定
         if (playerGroupDisplay) {
             playerGroupDisplay.style.backgroundColor = groupColors[player.group];
+        }
+        
+        // クリックボタンにグループクラスを追加
+        const clickButton = document.getElementById('click-button');
+        if (clickButton) {
+            // 既存のグループクラスを削除
+            clickButton.classList.remove('group-ruby', 'group-sapphire', 'group-emerald', 'group-topaz');
+            // 新しいグループクラスを追加
+            const groupClassMap = {
+                A: 'group-ruby',
+                B: 'group-sapphire',
+                C: 'group-emerald',
+                D: 'group-topaz'
+            };
+            clickButton.classList.add(groupClassMap[player.group]);
         }
         
         // UIを更新

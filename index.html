@@ -42,7 +42,17 @@
         <main class="main-content">
             <!-- 左カラム：クリックボタン -->
             <div class="left-column">
-                <button id="click-button" class="click-button">CLICK</button>
+                <button id="click-button" class="click-button gem-button">
+                    <svg class="gem-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                        <!-- 宝石の形状（ダイヤモンド型） -->
+                        <polygon points="50,10 20,40 30,90 70,90 80,40" class="gem-shape"/>
+                        <polygon points="50,10 20,40 50,50 80,40" class="gem-top"/>
+                        <polygon points="20,40 30,90 50,70 50,50" class="gem-left"/>
+                        <polygon points="80,40 50,50 50,70 70,90" class="gem-right"/>
+                        <polygon points="30,90 50,70 70,90" class="gem-bottom"/>
+                    </svg>
+                    <span class="gem-text">CLICK</span>
+                </button>
                 <div class="click-info">
                     <p>クリック数: <span id="click-count">0</span></p>
                 </div>
