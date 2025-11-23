@@ -33,6 +33,23 @@ let lastClickTime = 0;
 const CLICK_COOLDOWN = 200; // 0.2秒（200ミリ秒）
 
 // ============================================
+// グループ名マッピング
+// ============================================
+const groupNames = {
+    A: 'ルビー',
+    B: 'サファイア',
+    C: 'エメラルド',
+    D: 'トパーズ'
+};
+
+const groupColors = {
+    A: '#e91e63', // ルビー（赤）
+    B: '#2196f3', // サファイア（青）
+    C: '#4caf50', // エメラルド（緑）
+    D: '#ffc107'  // トパーズ（黄）
+};
+
+// ============================================
 // localStorage管理関数
 // ============================================
 const STORAGE_KEY = 'clicker-game-state';
@@ -393,13 +410,9 @@ function selectGroup(group) {
     gameContainer.style.display = 'flex';
     
     // プレイヤーグループの色を設定
-    const groupColors = {
-        A: '#ff6b6b',
-        B: '#4ecdc4',
-        C: '#45b7d1',
-        D: '#f9ca24'
-    };
-    playerGroupDisplay.style.backgroundColor = groupColors[group];
+    if (playerGroupDisplay) {
+        playerGroupDisplay.style.backgroundColor = groupColors[group];
+    }
     
     renderAll();
     
@@ -416,12 +429,6 @@ function loadInitialState() {
         gameContainer.style.display = 'flex';
         
         // プレイヤーグループの色を設定
-        const groupColors = {
-            A: '#ff6b6b',
-            B: '#4ecdc4',
-            C: '#45b7d1',
-            D: '#f9ca24'
-        };
         if (playerGroupDisplay) {
             playerGroupDisplay.style.backgroundColor = groupColors[player.group];
         }
@@ -449,8 +456,8 @@ function renderAll() {
 }
 
 function renderPlayerInfo() {
-    if (player.group) {
-        playerGroupDisplay.textContent = `Group ${player.group}`;
+    if (player.group && playerGroupDisplay) {
+        playerGroupDisplay.textContent = groupNames[player.group];
     }
 }
 
@@ -464,7 +471,7 @@ function renderGroupTable() {
         
         const badge = document.createElement('span');
         badge.className = `group-badge group-${group}`;
-        badge.textContent = `Group ${group}`;
+        badge.textContent = groupNames[group];
         groupCell.appendChild(badge);
         
         wealthCell.textContent = groups[group].totalWealth.toLocaleString();
@@ -489,7 +496,7 @@ function renderRateTable() {
         const pairCell = document.createElement('td');
         const rateCell = document.createElement('td');
         
-        pairCell.textContent = `${group} : Common`;
+        pairCell.textContent = `${groupNames[group]} : Common`;
         rateCell.textContent = `1 : ${rates[group]}`;
         
         // プレイヤーの所属グループを強調
@@ -722,7 +729,7 @@ async function mockTrade(player, from, to, amount, rates) {
             } else {
                 // プレイヤー個人のグループ通貨残高をチェック
                 if (player.groupCurrencies[from] < amount) {
-                    reject(new Error(`残高不足: Group ${from}通貨が足りません`));
+                    reject(new Error(`残高不足: ${groupNames[from]}通貨が足りません`));
                     return;
                 }
             }
