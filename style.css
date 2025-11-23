@@ -437,40 +437,68 @@ body::before {
     width: 200px;
     height: 200px;
     filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.5));
-    animation: gemRotate 3s linear infinite;
-}
-
-@keyframes gemRotate {
-    0% { transform: rotate(0deg) scale(1); }
-    50% { transform: rotate(180deg) scale(1.1); }
-    100% { transform: rotate(360deg) scale(1); }
 }
 
 .gem-shape {
     fill: #ffffff;
-    stroke: rgba(255, 255, 255, 0.5);
+    stroke: rgba(255, 255, 255, 0.8);
     stroke-width: 2;
-    opacity: 0.9;
+    opacity: 0.95;
+    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.8));
 }
 
 .gem-top {
-    fill: rgba(255, 255, 255, 0.95);
+    fill: rgba(255, 255, 255, 1);
     opacity: 1;
+    filter: drop-shadow(0 0 15px rgba(255, 255, 255, 1)) drop-shadow(0 0 25px rgba(255, 255, 255, 0.6));
 }
 
 .gem-left {
-    fill: rgba(255, 255, 255, 0.6);
-    opacity: 0.8;
+    fill: rgba(255, 255, 255, 0.7);
+    opacity: 0.9;
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.7));
 }
 
 .gem-right {
-    fill: rgba(255, 255, 255, 0.6);
-    opacity: 0.8;
+    fill: rgba(255, 255, 255, 0.7);
+    opacity: 0.9;
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.7));
 }
 
 .gem-bottom {
-    fill: rgba(255, 255, 255, 0.7);
-    opacity: 0.9;
+    fill: rgba(255, 255, 255, 0.8);
+    opacity: 0.95;
+    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.8));
+}
+
+.gem-highlight {
+    pointer-events: none;
+    animation: gemShine 2s ease-in-out infinite;
+}
+
+.gem-sparkle {
+    pointer-events: none;
+    animation: gemSparkle 1.5s ease-in-out infinite;
+}
+
+@keyframes gemShine {
+    0%, 100% {
+        opacity: 0.6;
+    }
+    50% {
+        opacity: 1;
+    }
+}
+
+@keyframes gemSparkle {
+    0%, 100% {
+        opacity: 0.7;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.2);
+    }
 }
 
 .gem-text {
@@ -483,41 +511,109 @@ body::before {
     position: relative;
 }
 
-/* グループ別の宝石の色 */
-.gem-button.group-ruby .gem-shape,
-.gem-button.group-ruby .gem-top,
-.gem-button.group-ruby .gem-left,
-.gem-button.group-ruby .gem-right,
-.gem-button.group-ruby .gem-bottom {
+/* グループ別の宝石の色と輝き */
+.gem-button.group-ruby .gem-shape {
     fill: #e91e63 !important;
-    stroke: rgba(233, 30, 99, 0.8);
+    stroke: rgba(255, 255, 255, 0.9);
+    filter: drop-shadow(0 0 15px rgba(233, 30, 99, 1)) drop-shadow(0 0 30px rgba(233, 30, 99, 0.8));
 }
 
-.gem-button.group-sapphire .gem-shape,
-.gem-button.group-sapphire .gem-top,
-.gem-button.group-sapphire .gem-left,
-.gem-button.group-sapphire .gem-right,
-.gem-button.group-sapphire .gem-bottom {
+.gem-button.group-ruby .gem-top {
+    fill: rgba(255, 255, 255, 0.95) !important;
+    filter: drop-shadow(0 0 20px rgba(255, 255, 255, 1)) drop-shadow(0 0 35px rgba(233, 30, 99, 0.9));
+}
+
+.gem-button.group-ruby .gem-left {
+    fill: rgba(233, 30, 99, 0.8) !important;
+    filter: drop-shadow(0 0 10px rgba(233, 30, 99, 0.9));
+}
+
+.gem-button.group-ruby .gem-right {
+    fill: rgba(233, 30, 99, 0.8) !important;
+    filter: drop-shadow(0 0 10px rgba(233, 30, 99, 0.9));
+}
+
+.gem-button.group-ruby .gem-bottom {
+    fill: rgba(233, 30, 99, 0.9) !important;
+    filter: drop-shadow(0 0 12px rgba(233, 30, 99, 1));
+}
+
+.gem-button.group-sapphire .gem-shape {
     fill: #2196f3 !important;
-    stroke: rgba(33, 150, 243, 0.8);
+    stroke: rgba(255, 255, 255, 0.9);
+    filter: drop-shadow(0 0 15px rgba(33, 150, 243, 1)) drop-shadow(0 0 30px rgba(33, 150, 243, 0.8));
 }
 
-.gem-button.group-emerald .gem-shape,
-.gem-button.group-emerald .gem-top,
-.gem-button.group-emerald .gem-left,
-.gem-button.group-emerald .gem-right,
-.gem-button.group-emerald .gem-bottom {
+.gem-button.group-sapphire .gem-top {
+    fill: rgba(255, 255, 255, 0.95) !important;
+    filter: drop-shadow(0 0 20px rgba(255, 255, 255, 1)) drop-shadow(0 0 35px rgba(33, 150, 243, 0.9));
+}
+
+.gem-button.group-sapphire .gem-left {
+    fill: rgba(33, 150, 243, 0.8) !important;
+    filter: drop-shadow(0 0 10px rgba(33, 150, 243, 0.9));
+}
+
+.gem-button.group-sapphire .gem-right {
+    fill: rgba(33, 150, 243, 0.8) !important;
+    filter: drop-shadow(0 0 10px rgba(33, 150, 243, 0.9));
+}
+
+.gem-button.group-sapphire .gem-bottom {
+    fill: rgba(33, 150, 243, 0.9) !important;
+    filter: drop-shadow(0 0 12px rgba(33, 150, 243, 1));
+}
+
+.gem-button.group-emerald .gem-shape {
     fill: #4caf50 !important;
-    stroke: rgba(76, 175, 80, 0.8);
+    stroke: rgba(255, 255, 255, 0.9);
+    filter: drop-shadow(0 0 15px rgba(76, 175, 80, 1)) drop-shadow(0 0 30px rgba(76, 175, 80, 0.8));
 }
 
-.gem-button.group-topaz .gem-shape,
-.gem-button.group-topaz .gem-top,
-.gem-button.group-topaz .gem-left,
-.gem-button.group-topaz .gem-right,
-.gem-button.group-topaz .gem-bottom {
+.gem-button.group-emerald .gem-top {
+    fill: rgba(255, 255, 255, 0.95) !important;
+    filter: drop-shadow(0 0 20px rgba(255, 255, 255, 1)) drop-shadow(0 0 35px rgba(76, 175, 80, 0.9));
+}
+
+.gem-button.group-emerald .gem-left {
+    fill: rgba(76, 175, 80, 0.8) !important;
+    filter: drop-shadow(0 0 10px rgba(76, 175, 80, 0.9));
+}
+
+.gem-button.group-emerald .gem-right {
+    fill: rgba(76, 175, 80, 0.8) !important;
+    filter: drop-shadow(0 0 10px rgba(76, 175, 80, 0.9));
+}
+
+.gem-button.group-emerald .gem-bottom {
+    fill: rgba(76, 175, 80, 0.9) !important;
+    filter: drop-shadow(0 0 12px rgba(76, 175, 80, 1));
+}
+
+.gem-button.group-topaz .gem-shape {
     fill: #ffc107 !important;
-    stroke: rgba(255, 193, 7, 0.8);
+    stroke: rgba(255, 255, 255, 0.9);
+    filter: drop-shadow(0 0 15px rgba(255, 193, 7, 1)) drop-shadow(0 0 30px rgba(255, 193, 7, 0.8));
+}
+
+.gem-button.group-topaz .gem-top {
+    fill: rgba(255, 255, 255, 0.95) !important;
+    filter: drop-shadow(0 0 20px rgba(255, 255, 255, 1)) drop-shadow(0 0 35px rgba(255, 193, 7, 0.9));
+}
+
+.gem-button.group-topaz .gem-left {
+    fill: rgba(255, 193, 7, 0.8) !important;
+    filter: drop-shadow(0 0 10px rgba(255, 193, 7, 0.9));
+}
+
+.gem-button.group-topaz .gem-right {
+    fill: rgba(255, 193, 7, 0.8) !important;
+    filter: drop-shadow(0 0 10px rgba(255, 193, 7, 0.9));
+}
+
+.gem-button.group-topaz .gem-bottom {
+    fill: rgba(255, 193, 7, 0.9) !important;
+    filter: drop-shadow(0 0 12px rgba(255, 193, 7, 1));
 }
 
 @keyframes buttonPulse {
@@ -656,8 +752,16 @@ body::before {
 }
 
 .click-button:hover .gem-icon {
-    filter: drop-shadow(0 0 30px rgba(255, 255, 255, 0.8)) drop-shadow(0 0 50px rgba(255, 255, 255, 0.5));
-    transform: scale(1.1);
+    filter: drop-shadow(0 0 40px rgba(255, 255, 255, 1)) drop-shadow(0 0 60px rgba(255, 255, 255, 0.8));
+    transform: scale(1.05);
+}
+
+.click-button:hover .gem-shape,
+.click-button:hover .gem-top,
+.click-button:hover .gem-left,
+.click-button:hover .gem-right,
+.click-button:hover .gem-bottom {
+    filter: brightness(1.3) drop-shadow(0 0 20px rgba(255, 255, 255, 1));
 }
 
 /* グループ別のホバーエフェクト */
