@@ -36,12 +36,6 @@
             </div>
             <div class="header-right">
                 <div class="player-info">
-                    <div class="group-selector">
-                        <button class="group-select-btn" data-group="A" style="background-color: #e91e63;">ルビー</button>
-                        <button class="group-select-btn" data-group="B" style="background-color: #2196f3;">サファイア</button>
-                        <button class="group-select-btn" data-group="C" style="background-color: #4caf50;">エメラルド</button>
-                        <button class="group-select-btn" data-group="D" style="background-color: #ffc107;">トパーズ</button>
-                    </div>
                     <span id="player-group" class="player-group"></span>
                     <button id="trade-button" class="trade-button">トレード</button>
                 </div>
@@ -78,74 +72,86 @@
                 </button>
                 <!-- グループ選択アイコン -->
                 <div class="group-icons">
-                    <button class="group-icon-btn" data-group="A" title="ルビー">
-                        <svg class="group-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                            <defs>
-                                <linearGradient id="shine-A" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" style="stop-color:rgba(255,255,255,0.8);stop-opacity:1" />
-                                    <stop offset="50%" style="stop-color:rgba(255,255,255,0.3);stop-opacity:1" />
-                                    <stop offset="100%" style="stop-color:rgba(255,255,255,0);stop-opacity:1" />
-                                </linearGradient>
-                            </defs>
-                            <polygon points="50,10 20,40 30,90 70,90 80,40" class="gem-shape gem-ruby-shape" stroke-width="2"/>
-                            <polygon points="50,10 20,40 50,50 80,40" class="gem-top gem-ruby-top"/>
-                            <polygon points="20,40 30,90 50,70 50,50" class="gem-left gem-ruby-left"/>
-                            <polygon points="80,40 50,50 50,70 70,90" class="gem-right gem-ruby-right"/>
-                            <polygon points="30,90 50,70 70,90" class="gem-bottom gem-ruby-bottom"/>
-                            <polygon points="50,10 20,40 50,50 80,40" fill="url(#shine-A)" opacity="0.6" class="gem-highlight"/>
-                        </svg>
-                    </button>
-                    <button class="group-icon-btn" data-group="B" title="サファイア">
-                        <svg class="group-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                            <defs>
-                                <linearGradient id="shine-B" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" style="stop-color:rgba(255,255,255,0.8);stop-opacity:1" />
-                                    <stop offset="50%" style="stop-color:rgba(255,255,255,0.3);stop-opacity:1" />
-                                    <stop offset="100%" style="stop-color:rgba(255,255,255,0);stop-opacity:1" />
-                                </linearGradient>
-                            </defs>
-                            <polygon points="50,10 20,40 30,90 70,90 80,40" class="gem-shape gem-sapphire-shape" stroke-width="2"/>
-                            <polygon points="50,10 20,40 50,50 80,40" class="gem-top gem-sapphire-top"/>
-                            <polygon points="20,40 30,90 50,70 50,50" class="gem-left gem-sapphire-left"/>
-                            <polygon points="80,40 50,50 50,70 70,90" class="gem-right gem-sapphire-right"/>
-                            <polygon points="30,90 50,70 70,90" class="gem-bottom gem-sapphire-bottom"/>
-                            <polygon points="50,10 20,40 50,50 80,40" fill="url(#shine-B)" opacity="0.6" class="gem-highlight"/>
-                        </svg>
-                    </button>
-                    <button class="group-icon-btn" data-group="C" title="エメラルド">
-                        <svg class="group-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                            <defs>
-                                <linearGradient id="shine-C" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" style="stop-color:rgba(255,255,255,0.8);stop-opacity:1" />
-                                    <stop offset="50%" style="stop-color:rgba(255,255,255,0.3);stop-opacity:1" />
-                                    <stop offset="100%" style="stop-color:rgba(255,255,255,0);stop-opacity:1" />
-                                </linearGradient>
-                            </defs>
-                            <polygon points="50,10 20,40 30,90 70,90 80,40" class="gem-shape gem-emerald-shape" stroke-width="2"/>
-                            <polygon points="50,10 20,40 50,50 80,40" class="gem-top gem-emerald-top"/>
-                            <polygon points="20,40 30,90 50,70 50,50" class="gem-left gem-emerald-left"/>
-                            <polygon points="80,40 50,50 50,70 70,90" class="gem-right gem-emerald-right"/>
-                            <polygon points="30,90 50,70 70,90" class="gem-bottom gem-emerald-bottom"/>
-                            <polygon points="50,10 20,40 50,50 80,40" fill="url(#shine-C)" opacity="0.6" class="gem-highlight"/>
-                        </svg>
-                    </button>
-                    <button class="group-icon-btn" data-group="D" title="トパーズ">
-                        <svg class="group-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                            <defs>
-                                <linearGradient id="shine-D" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" style="stop-color:rgba(255,255,255,0.8);stop-opacity:1" />
-                                    <stop offset="50%" style="stop-color:rgba(255,255,255,0.3);stop-opacity:1" />
-                                    <stop offset="100%" style="stop-color:rgba(255,255,255,0);stop-opacity:1" />
-                                </linearGradient>
-                            </defs>
-                            <polygon points="50,10 20,40 30,90 70,90 80,40" class="gem-shape gem-topaz-shape" stroke-width="2"/>
-                            <polygon points="50,10 20,40 50,50 80,40" class="gem-top gem-topaz-top"/>
-                            <polygon points="20,40 30,90 50,70 50,50" class="gem-left gem-topaz-left"/>
-                            <polygon points="80,40 50,50 50,70 70,90" class="gem-right gem-topaz-right"/>
-                            <polygon points="30,90 50,70 70,90" class="gem-bottom gem-topaz-bottom"/>
-                            <polygon points="50,10 20,40 50,50 80,40" fill="url(#shine-D)" opacity="0.6" class="gem-highlight"/>
-                        </svg>
-                    </button>
+                    <div class="group-icon-item">
+                        <button class="group-icon-btn" data-group="A" title="ルビー">
+                            <svg class="group-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                <defs>
+                                    <linearGradient id="shine-A" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" style="stop-color:rgba(255,255,255,0.8);stop-opacity:1" />
+                                        <stop offset="50%" style="stop-color:rgba(255,255,255,0.3);stop-opacity:1" />
+                                        <stop offset="100%" style="stop-color:rgba(255,255,255,0);stop-opacity:1" />
+                                    </linearGradient>
+                                </defs>
+                                <polygon points="50,10 20,40 30,90 70,90 80,40" class="gem-shape gem-ruby-shape" stroke-width="2"/>
+                                <polygon points="50,10 20,40 50,50 80,40" class="gem-top gem-ruby-top"/>
+                                <polygon points="20,40 30,90 50,70 50,50" class="gem-left gem-ruby-left"/>
+                                <polygon points="80,40 50,50 50,70 70,90" class="gem-right gem-ruby-right"/>
+                                <polygon points="30,90 50,70 70,90" class="gem-bottom gem-ruby-bottom"/>
+                                <polygon points="50,10 20,40 50,50 80,40" fill="url(#shine-A)" opacity="0.6" class="gem-highlight"/>
+                            </svg>
+                        </button>
+                        <span class="group-value" id="group-value-A">0</span>
+                    </div>
+                    <div class="group-icon-item">
+                        <button class="group-icon-btn" data-group="B" title="サファイア">
+                            <svg class="group-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                <defs>
+                                    <linearGradient id="shine-B" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" style="stop-color:rgba(255,255,255,0.8);stop-opacity:1" />
+                                        <stop offset="50%" style="stop-color:rgba(255,255,255,0.3);stop-opacity:1" />
+                                        <stop offset="100%" style="stop-color:rgba(255,255,255,0);stop-opacity:1" />
+                                    </linearGradient>
+                                </defs>
+                                <polygon points="50,10 20,40 30,90 70,90 80,40" class="gem-shape gem-sapphire-shape" stroke-width="2"/>
+                                <polygon points="50,10 20,40 50,50 80,40" class="gem-top gem-sapphire-top"/>
+                                <polygon points="20,40 30,90 50,70 50,50" class="gem-left gem-sapphire-left"/>
+                                <polygon points="80,40 50,50 50,70 70,90" class="gem-right gem-sapphire-right"/>
+                                <polygon points="30,90 50,70 70,90" class="gem-bottom gem-sapphire-bottom"/>
+                                <polygon points="50,10 20,40 50,50 80,40" fill="url(#shine-B)" opacity="0.6" class="gem-highlight"/>
+                            </svg>
+                        </button>
+                        <span class="group-value" id="group-value-B">0</span>
+                    </div>
+                    <div class="group-icon-item">
+                        <button class="group-icon-btn" data-group="C" title="エメラルド">
+                            <svg class="group-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                <defs>
+                                    <linearGradient id="shine-C" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" style="stop-color:rgba(255,255,255,0.8);stop-opacity:1" />
+                                        <stop offset="50%" style="stop-color:rgba(255,255,255,0.3);stop-opacity:1" />
+                                        <stop offset="100%" style="stop-color:rgba(255,255,255,0);stop-opacity:1" />
+                                    </linearGradient>
+                                </defs>
+                                <polygon points="50,10 20,40 30,90 70,90 80,40" class="gem-shape gem-emerald-shape" stroke-width="2"/>
+                                <polygon points="50,10 20,40 50,50 80,40" class="gem-top gem-emerald-top"/>
+                                <polygon points="20,40 30,90 50,70 50,50" class="gem-left gem-emerald-left"/>
+                                <polygon points="80,40 50,50 50,70 70,90" class="gem-right gem-emerald-right"/>
+                                <polygon points="30,90 50,70 70,90" class="gem-bottom gem-emerald-bottom"/>
+                                <polygon points="50,10 20,40 50,50 80,40" fill="url(#shine-C)" opacity="0.6" class="gem-highlight"/>
+                            </svg>
+                        </button>
+                        <span class="group-value" id="group-value-C">0</span>
+                    </div>
+                    <div class="group-icon-item">
+                        <button class="group-icon-btn" data-group="D" title="トパーズ">
+                            <svg class="group-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                <defs>
+                                    <linearGradient id="shine-D" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" style="stop-color:rgba(255,255,255,0.8);stop-opacity:1" />
+                                        <stop offset="50%" style="stop-color:rgba(255,255,255,0.3);stop-opacity:1" />
+                                        <stop offset="100%" style="stop-color:rgba(255,255,255,0);stop-opacity:1" />
+                                    </linearGradient>
+                                </defs>
+                                <polygon points="50,10 20,40 30,90 70,90 80,40" class="gem-shape gem-topaz-shape" stroke-width="2"/>
+                                <polygon points="50,10 20,40 50,50 80,40" class="gem-top gem-topaz-top"/>
+                                <polygon points="20,40 30,90 50,70 50,50" class="gem-left gem-topaz-left"/>
+                                <polygon points="80,40 50,50 50,70 70,90" class="gem-right gem-topaz-right"/>
+                                <polygon points="30,90 50,70 70,90" class="gem-bottom gem-topaz-bottom"/>
+                                <polygon points="50,10 20,40 50,50 80,40" fill="url(#shine-D)" opacity="0.6" class="gem-highlight"/>
+                            </svg>
+                        </button>
+                        <span class="group-value" id="group-value-D">0</span>
+                    </div>
                 </div>
                 <div class="click-info">
                     <p>クリック数: <span id="click-count">0</span></p>

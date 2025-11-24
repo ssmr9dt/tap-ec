@@ -998,6 +998,25 @@ body::before {
     margin: 20px 0;
 }
 
+.group-icon-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.group-value {
+    font-size: 1rem;
+    font-weight: 900;
+    font-family: 'Press Start 2P', cursive;
+    color: white;
+    text-shadow: 
+        0 0 10px rgba(255, 255, 255, 0.8),
+        0 0 20px rgba(120, 119, 198, 0.6);
+    min-width: 60px;
+    text-align: center;
+}
+
 .group-icon-btn {
     background: transparent;
     border: none;
@@ -1718,6 +1737,10 @@ body::before {
     .group-icon {
         width: 45px;
         height: 45px;
+    }
+
+    .group-value {
+        font-size: 0.7rem;
     }
 
     .trade-button {

@@ -150,8 +150,11 @@ const exchangeRateButton = document.getElementById('exchange-rate-button');
 const closeExchangeRateModal = document.getElementById('close-exchange-rate-modal');
 const emeraldWealth = document.getElementById('emerald-wealth');
 const emeraldRate = document.getElementById('emerald-rate');
-const groupSelectButtons = document.querySelectorAll('.group-select-btn');
 const groupIconButtons = document.querySelectorAll('.group-icon-btn');
+const groupValueA = document.getElementById('group-value-A');
+const groupValueB = document.getElementById('group-value-B');
+const groupValueC = document.getElementById('group-value-C');
+const groupValueD = document.getElementById('group-value-D');
 
 // ============================================
 // 初期化関数
@@ -162,18 +165,6 @@ function init() {
         btn.addEventListener('click', (e) => {
             const selectedGroup = e.target.dataset.group;
             selectGroup(selectedGroup);
-        });
-    });
-
-    // ヘッダーのグループ選択ボタンのイベントリスナー
-    groupSelectButtons.forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            const selectedGroup = e.target.dataset.group || e.target.closest('.group-select-btn')?.dataset.group;
-            if (selectedGroup) {
-                selectGroup(selectedGroup);
-            }
         });
     });
 
@@ -455,20 +446,6 @@ function selectGroup(group) {
         playerGroupDisplay.textContent = groupNames[group];
     }
     
-    // ヘッダーのグループ選択ボタンのスタイルを更新
-    groupSelectButtons.forEach(btn => {
-        const btnGroup = btn.dataset.group;
-        if (btnGroup === group) {
-            btn.style.opacity = '1';
-            btn.style.transform = 'scale(1.1)';
-            btn.style.boxShadow = `0 0 20px ${groupColors[group]}, inset 0 0 20px rgba(255, 255, 255, 0.3)`;
-        } else {
-            btn.style.opacity = '0.6';
-            btn.style.transform = 'scale(1)';
-            btn.style.boxShadow = '0 0 15px rgba(0, 0, 0, 0.5), inset 0 0 15px rgba(255, 255, 255, 0.1)';
-        }
-    });
-    
     // クリックボタン下のグループアイコンボタンのスタイルを更新
     groupIconButtons.forEach(btn => {
         const btnGroup = btn.dataset.group;
@@ -518,20 +495,6 @@ function loadInitialState() {
         playerGroupDisplay.textContent = groupNames[player.group];
     }
     
-        // ヘッダーのグループ選択ボタンのスタイルを更新
-        groupSelectButtons.forEach(btn => {
-            const btnGroup = btn.dataset.group;
-            if (btnGroup === player.group) {
-                btn.style.opacity = '1';
-                btn.style.transform = 'scale(1.1)';
-                btn.style.boxShadow = `0 0 20px ${groupColors[player.group]}, inset 0 0 20px rgba(255, 255, 255, 0.3)`;
-            } else {
-                btn.style.opacity = '0.6';
-                btn.style.transform = 'scale(1)';
-                btn.style.boxShadow = '0 0 15px rgba(0, 0, 0, 0.5), inset 0 0 15px rgba(255, 255, 255, 0.1)';
-            }
-        });
-        
         // クリックボタン下のグループアイコンボタンのスタイルを更新
         groupIconButtons.forEach(btn => {
             const btnGroup = btn.dataset.group;
@@ -577,6 +540,7 @@ function renderAll() {
     renderGroupTable();
     renderRateTable();
     renderEmeraldInfo();
+    renderGroupValues();
     
     // クリック数の表示も更新
     if (clickCountDisplay) {
@@ -657,6 +621,22 @@ function renderEmeraldInfo() {
     }
     if (emeraldRate) {
         emeraldRate.textContent = `1 : ${rates.C}`;
+    }
+}
+
+function renderGroupValues() {
+    // 各グループの個人資産を表示
+    if (groupValueA) {
+        groupValueA.textContent = player.groupCurrencies.A.toLocaleString();
+    }
+    if (groupValueB) {
+        groupValueB.textContent = player.groupCurrencies.B.toLocaleString();
+    }
+    if (groupValueC) {
+        groupValueC.textContent = player.groupCurrencies.C.toLocaleString();
+    }
+    if (groupValueD) {
+        groupValueD.textContent = player.groupCurrencies.D.toLocaleString();
     }
 }
 
@@ -852,10 +832,14 @@ async function mockClick(player, groups) {
             const updatedGroups = { ...groups };
             updatedGroups[player.group].totalWealth += 1;
             
-            // プレイヤーの個人資産も+1（共通通貨）
+            // プレイヤーの個人資産も+1（共通通貨と選択中のグループ通貨）
             const updatedPlayer = {
                 ...player,
-                commonCurrency: player.commonCurrency + 1
+                commonCurrency: player.commonCurrency + 1,
+                groupCurrencies: {
+                    ...player.groupCurrencies,
+                    [player.group]: player.groupCurrencies[player.group] + 1
+                }
             };
             
             resolve({
