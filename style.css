@@ -386,6 +386,59 @@ body::before {
     font-size: 1rem;
 }
 
+.change-group-button {
+    padding: 12px 24px;
+    font-size: 0.9rem;
+    font-weight: 900;
+    font-family: 'Press Start 2P', cursive;
+    color: white;
+    background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: 0;
+    cursor: pointer;
+    transition: all 0.2s;
+    touch-action: manipulation;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    box-shadow: 
+        0 0 15px rgba(76, 175, 80, 0.6),
+        inset 0 0 15px rgba(255, 255, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.change-group-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s;
+}
+
+.change-group-button:hover::before {
+    left: 100%;
+}
+
+.change-group-button:hover {
+    background: linear-gradient(135deg, #45a049 0%, #2e7d32 100%);
+    box-shadow: 
+        0 0 25px rgba(76, 175, 80, 0.8),
+        inset 0 0 25px rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.change-group-button:active {
+    background: linear-gradient(135deg, #3d8b40 0%, #1b5e20 100%);
+    transform: translateY(0);
+    box-shadow: 
+        0 0 15px rgba(76, 175, 80, 0.5),
+        inset 0 0 15px rgba(255, 255, 255, 0.1);
+}
+
 .trade-button {
     padding: 12px 24px;
     font-size: 0.9rem;

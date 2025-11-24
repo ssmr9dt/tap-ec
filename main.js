@@ -150,6 +150,7 @@ const exchangeRateButton = document.getElementById('exchange-rate-button');
 const closeExchangeRateModal = document.getElementById('close-exchange-rate-modal');
 const emeraldWealth = document.getElementById('emerald-wealth');
 const emeraldRate = document.getElementById('emerald-rate');
+const changeGroupButton = document.getElementById('change-group-button');
 
 // ============================================
 // 初期化関数
@@ -173,18 +174,6 @@ function init() {
         e.clientX = centerX;
         e.clientY = centerY;
         onClickButton(e);
-    });
-
-    // グループ選択モーダルのクリックイベントリスナー（最初の画面）
-    groupSelectModal.addEventListener('click', (e) => {
-        // ボタンなどのインタラクティブ要素をクリックした場合は無視
-        if (e.target.closest('button') || 
-            e.target.closest('input') || 
-            e.target.closest('select') ||
-            e.target.closest('a')) {
-            return;
-        }
-        // モーダルが表示されている間はクリック無効（グループ選択のみ）
     });
 
     // ゲームコンテナ全体のクリックイベントリスナー（一画面全体）
@@ -332,8 +321,39 @@ function init() {
             if (exchangeRateModal.style.display === 'flex') {
                 exchangeRateModal.style.display = 'none';
             }
+            if (groupSelectModal.style.display === 'flex') {
+                groupSelectModal.style.display = 'none';
+            }
         }
     });
+
+    // グループ変更ボタンのイベントリスナー
+    if (changeGroupButton) {
+        changeGroupButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            // モーダルのタイトルを変更
+            const modalTitle = groupSelectModal.querySelector('h2');
+            if (modalTitle) {
+                modalTitle.textContent = 'グループを変更してください';
+            }
+            groupSelectModal.style.display = 'flex';
+        });
+    }
+
+    // グループ選択モーダル外クリックで閉じる（ゲーム中のみ）
+    if (groupSelectModal) {
+        groupSelectModal.addEventListener('click', (e) => {
+            // モーダルコンテンツ内をクリックした場合は無視
+            if (e.target.closest('.modal-content')) {
+                return;
+            }
+            // ゲームが開始されている場合のみ閉じる
+            if (player.group) {
+                groupSelectModal.style.display = 'none';
+            }
+        });
+    }
 
     // モックサーバーから初期状態を読み込む（実際はローカルで初期値セット）
     loadInitialState();
@@ -410,6 +430,12 @@ function selectGroup(group) {
     player.group = group;
     groupSelectModal.style.display = 'none';
     gameContainer.style.display = 'flex';
+    
+    // モーダルのタイトルを元に戻す
+    const modalTitle = groupSelectModal.querySelector('h2');
+    if (modalTitle) {
+        modalTitle.textContent = 'グループを選択してください';
+    }
     
     // プレイヤーグループの色を設定
     if (playerGroupDisplay) {
