@@ -124,11 +124,9 @@ function clearGameState() {
 // ============================================
 // DOM要素の取得
 // ============================================
-const groupSelectModal = document.getElementById('group-select-modal');
 const gameContainer = document.getElementById('game-container');
 const mainContent = document.querySelector('.main-content');
 const header = document.querySelector('.header');
-const groupButtons = document.querySelectorAll('.group-btn');
 const clickButton = document.getElementById('click-button');
 const playerGroupDisplay = document.getElementById('player-group');
 const groupIconButtons = document.querySelectorAll('.group-icon-btn');
@@ -141,14 +139,6 @@ const groupValueD = document.getElementById('group-value-D');
 // 初期化関数
 // ============================================
 function init() {
-    // グループ選択ボタンのイベントリスナー（モーダル内）
-    groupButtons.forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const selectedGroup = e.target.dataset.group;
-            selectGroup(selectedGroup);
-        });
-    });
-
     // クリックボタン下のグループアイコンボタンのイベントリスナー
     groupIconButtons.forEach(btn => {
         btn.addEventListener('click', (e) => {
@@ -219,29 +209,6 @@ function init() {
         onClickButton(touchEvent);
     }, { passive: false });
 
-    // ESCキーでモーダルを閉じる
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-            if (groupSelectModal.style.display === 'flex') {
-                groupSelectModal.style.display = 'none';
-            }
-        }
-    });
-
-
-    // グループ選択モーダル外クリックで閉じる（ゲーム中のみ）
-    if (groupSelectModal) {
-        groupSelectModal.addEventListener('click', (e) => {
-            // モーダルコンテンツ内をクリックした場合は無視
-            if (e.target.closest('.modal-content')) {
-                return;
-            }
-            // ゲームが開始されている場合のみ閉じる
-            if (player.group) {
-                groupSelectModal.style.display = 'none';
-            }
-        });
-    }
 
     // モックサーバーから初期状態を読み込む（実際はローカルで初期値セット）
     loadInitialState();
@@ -316,14 +283,6 @@ function preventDoubleTapZoom() {
 // グループ選択
 function selectGroup(group) {
     player.group = group;
-    groupSelectModal.style.display = 'none';
-    gameContainer.style.display = 'flex';
-    
-    // モーダルのタイトルを元に戻す
-    const modalTitle = groupSelectModal.querySelector('h2');
-    if (modalTitle) {
-        modalTitle.textContent = 'グループを選択してください';
-    }
     
     // プレイヤーグループの色を設定
     if (playerGroupDisplay) {
@@ -371,15 +330,11 @@ function selectGroup(group) {
 function loadInitialState() {
     const loaded = loadGameState();
     if (loaded && player.group) {
-        // グループが選択されている場合は、ゲーム画面を表示
-        groupSelectModal.style.display = 'none';
-        gameContainer.style.display = 'flex';
-        
-    // プレイヤーグループの色を設定
-    if (playerGroupDisplay) {
-        playerGroupDisplay.style.backgroundColor = groupColors[player.group];
-        playerGroupDisplay.textContent = groupNames[player.group];
-    }
+        // プレイヤーグループの色を設定
+        if (playerGroupDisplay) {
+            playerGroupDisplay.style.backgroundColor = groupColors[player.group];
+            playerGroupDisplay.textContent = groupNames[player.group];
+        }
     
         // クリックボタン下のグループアイコンボタンのスタイルを更新
         groupIconButtons.forEach(btn => {
