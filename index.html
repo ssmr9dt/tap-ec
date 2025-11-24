@@ -37,7 +37,6 @@
             <div class="header-right">
                 <div class="player-info">
                     <span id="player-group" class="player-group"></span>
-                    <button id="trade-button" class="trade-button">トレード</button>
                 </div>
             </div>
         </header>
@@ -153,113 +152,8 @@
                         <span class="group-value" id="group-value-D">0</span>
                     </div>
                 </div>
-                <!-- エメラルドグループ情報 -->
-                <div class="emerald-info">
-                    <div class="emerald-info-item">
-                        <span class="emerald-label">エメラルド総資産:</span>
-                        <span id="emerald-wealth" class="emerald-value">0</span>
-                    </div>
-                    <div class="emerald-info-item">
-                        <span class="emerald-label">エメラルドレート:</span>
-                        <span id="emerald-rate" class="emerald-value">1 : 1</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 右カラム：情報ボタン -->
-            <div class="right-column">
-                <div class="info-buttons">
-                    <button id="group-wealth-button" class="info-button">グループ総資産</button>
-                    <button id="exchange-rate-button" class="info-button">為替レート</button>
-                </div>
             </div>
         </main>
-    </div>
-
-    <!-- トレードモーダル -->
-    <div id="trade-modal" class="modal" style="display: none;">
-        <div class="modal-content trade-modal-content">
-            <div class="modal-header">
-                <h2>トレード</h2>
-                <button id="close-trade-modal" class="close-button">×</button>
-            </div>
-            <form id="trade-form" class="trade-form">
-                <div class="form-row">
-                    <label>
-                        From通貨:
-                        <select id="trade-from" name="from">
-                            <option value="Common">Common</option>
-                            <option value="A">ルビー</option>
-                            <option value="B">サファイア</option>
-                            <option value="C">エメラルド</option>
-                            <option value="D">トパーズ</option>
-                        </select>
-                    </label>
-                    <label>
-                        To通貨:
-                        <select id="trade-to" name="to">
-                            <option value="Common">Common</option>
-                            <option value="A">ルビー</option>
-                            <option value="B">サファイア</option>
-                            <option value="C">エメラルド</option>
-                            <option value="D">トパーズ</option>
-                        </select>
-                    </label>
-                    <label>
-                        数量:
-                        <input type="number" id="trade-amount" name="amount" min="1" value="1" required>
-                    </label>
-                </div>
-                <div class="form-actions">
-                    <button type="submit" class="submit-btn">送信</button>
-                    <button type="button" id="cancel-trade" class="cancel-btn">キャンセル</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- グループ総資産モーダル -->
-    <div id="group-wealth-modal" class="modal" style="display: none;">
-        <div class="modal-content info-modal-content">
-            <div class="modal-header">
-                <h2>グループ総資産</h2>
-                <button id="close-group-wealth-modal" class="close-button">×</button>
-            </div>
-            <div class="modal-body">
-                <table id="group-table" class="data-table">
-                    <thead>
-                        <tr>
-                            <th>グループ</th>
-                            <th>総資産</th>
-                        </tr>
-                    </thead>
-                    <tbody id="group-table-body">
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <!-- 為替レートモーダル -->
-    <div id="exchange-rate-modal" class="modal" style="display: none;">
-        <div class="modal-content info-modal-content">
-            <div class="modal-header">
-                <h2>為替レート</h2>
-                <button id="close-exchange-rate-modal" class="close-button">×</button>
-            </div>
-            <div class="modal-body">
-                <table id="rate-table" class="data-table">
-                    <thead>
-                        <tr>
-                            <th>通貨ペア</th>
-                            <th>レート</th>
-                        </tr>
-                    </thead>
-                    <tbody id="rate-table-body">
-                    </tbody>
-                </table>
-            </div>
-        </div>
     </div>
 
     <script src="main.js" defer></script>

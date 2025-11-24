@@ -131,24 +131,6 @@ const header = document.querySelector('.header');
 const groupButtons = document.querySelectorAll('.group-btn');
 const clickButton = document.getElementById('click-button');
 const playerGroupDisplay = document.getElementById('player-group');
-const groupTableBody = document.getElementById('group-table-body');
-const rateTableBody = document.getElementById('rate-table-body');
-const tradeForm = document.getElementById('trade-form');
-const tradeFrom = document.getElementById('trade-from');
-const tradeTo = document.getElementById('trade-to');
-const tradeAmount = document.getElementById('trade-amount');
-const tradeModal = document.getElementById('trade-modal');
-const tradeButton = document.getElementById('trade-button');
-const closeTradeModal = document.getElementById('close-trade-modal');
-const cancelTrade = document.getElementById('cancel-trade');
-const groupWealthModal = document.getElementById('group-wealth-modal');
-const groupWealthButton = document.getElementById('group-wealth-button');
-const closeGroupWealthModal = document.getElementById('close-group-wealth-modal');
-const exchangeRateModal = document.getElementById('exchange-rate-modal');
-const exchangeRateButton = document.getElementById('exchange-rate-button');
-const closeExchangeRateModal = document.getElementById('close-exchange-rate-modal');
-const emeraldWealth = document.getElementById('emerald-wealth');
-const emeraldRate = document.getElementById('emerald-rate');
 const groupIconButtons = document.querySelectorAll('.group-icon-btn');
 const groupValueA = document.getElementById('group-value-A');
 const groupValueB = document.getElementById('group-value-B');
@@ -237,105 +219,9 @@ function init() {
         onClickButton(touchEvent);
     }, { passive: false });
 
-    // トレードフォームのイベントリスナー
-    tradeForm.addEventListener('submit', onTradeSubmit);
-
-    // トレードモーダルの開閉イベントリスナー
-    if (tradeButton && tradeModal) {
-        tradeButton.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            tradeModal.style.display = 'flex';
-        });
-    } else {
-        console.error('Trade button or modal not found:', { tradeButton, tradeModal });
-    }
-
-    if (closeTradeModal && tradeModal) {
-        closeTradeModal.addEventListener('click', () => {
-            tradeModal.style.display = 'none';
-        });
-    }
-
-    if (cancelTrade && tradeModal) {
-        cancelTrade.addEventListener('click', () => {
-            tradeModal.style.display = 'none';
-        });
-    }
-
-    // モーダル外クリックで閉じる
-    if (tradeModal) {
-        tradeModal.addEventListener('click', (e) => {
-            if (e.target === tradeModal) {
-                tradeModal.style.display = 'none';
-            }
-        });
-    }
-
-    // グループ総資産モーダルの開閉イベントリスナー
-    if (groupWealthButton && groupWealthModal) {
-        groupWealthButton.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            groupWealthModal.style.display = 'flex';
-        });
-    } else {
-        console.error('Group wealth button or modal not found:', { groupWealthButton, groupWealthModal });
-    }
-
-    if (closeGroupWealthModal && groupWealthModal) {
-        closeGroupWealthModal.addEventListener('click', () => {
-            groupWealthModal.style.display = 'none';
-        });
-    }
-
-    // グループ総資産モーダル外クリックで閉じる
-    if (groupWealthModal) {
-        groupWealthModal.addEventListener('click', (e) => {
-            if (e.target === groupWealthModal) {
-                groupWealthModal.style.display = 'none';
-            }
-        });
-    }
-
-    // 為替レートモーダルの開閉イベントリスナー
-    if (exchangeRateButton && exchangeRateModal) {
-        exchangeRateButton.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            exchangeRateModal.style.display = 'flex';
-        });
-    } else {
-        console.error('Exchange rate button or modal not found:', { exchangeRateButton, exchangeRateModal });
-    }
-
-    if (closeExchangeRateModal && exchangeRateModal) {
-        closeExchangeRateModal.addEventListener('click', () => {
-            exchangeRateModal.style.display = 'none';
-        });
-    }
-
-    // 為替レートモーダル外クリックで閉じる
-    if (exchangeRateModal) {
-        exchangeRateModal.addEventListener('click', (e) => {
-            if (e.target === exchangeRateModal) {
-                exchangeRateModal.style.display = 'none';
-            }
-        });
-    }
-
     // ESCキーでモーダルを閉じる
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
-            if (tradeModal.style.display === 'flex') {
-                tradeModal.style.display = 'none';
-            }
-            if (groupWealthModal.style.display === 'flex') {
-                groupWealthModal.style.display = 'none';
-            }
-            if (exchangeRateModal.style.display === 'flex') {
-                exchangeRateModal.style.display = 'none';
-            }
             if (groupSelectModal.style.display === 'flex') {
                 groupSelectModal.style.display = 'none';
             }
@@ -540,85 +426,12 @@ function loadInitialState() {
 // ============================================
 function renderAll() {
     renderPlayerInfo();
-    renderGroupTable();
-    renderRateTable();
-    renderEmeraldInfo();
     renderGroupValues();
 }
 
 function renderPlayerInfo() {
     if (player.group && playerGroupDisplay) {
         playerGroupDisplay.textContent = groupNames[player.group];
-    }
-}
-
-function renderGroupTable() {
-    groupTableBody.innerHTML = '';
-    
-    Object.keys(groups).forEach(group => {
-        // エメラルド（C）は左カラムに表示するので、テーブルから除外
-        if (group === 'C') {
-            return;
-        }
-        
-        const row = document.createElement('tr');
-        const groupCell = document.createElement('td');
-        const wealthCell = document.createElement('td');
-        
-        const badge = document.createElement('span');
-        badge.className = `group-badge group-${group}`;
-        badge.textContent = groupNames[group];
-        groupCell.appendChild(badge);
-        
-        wealthCell.textContent = groups[group].totalWealth.toLocaleString();
-        
-        // プレイヤーの所属グループを強調
-        if (group === player.group) {
-            row.style.backgroundColor = '#e8f4f8';
-            row.style.fontWeight = 'bold';
-        }
-        
-        row.appendChild(groupCell);
-        row.appendChild(wealthCell);
-        groupTableBody.appendChild(row);
-    });
-}
-
-function renderRateTable() {
-    rateTableBody.innerHTML = '';
-    
-    Object.keys(rates).forEach(group => {
-        // エメラルド（C）は左カラムに表示するので、テーブルから除外
-        if (group === 'C') {
-            return;
-        }
-        
-        const row = document.createElement('tr');
-        const pairCell = document.createElement('td');
-        const rateCell = document.createElement('td');
-        
-        pairCell.textContent = `${groupNames[group]} : Common`;
-        rateCell.textContent = `1 : ${rates[group]}`;
-        
-        // プレイヤーの所属グループを強調
-        if (group === player.group) {
-            row.style.backgroundColor = '#e8f4f8';
-            row.style.fontWeight = 'bold';
-        }
-        
-        row.appendChild(pairCell);
-        row.appendChild(rateCell);
-        rateTableBody.appendChild(row);
-    });
-}
-
-function renderEmeraldInfo() {
-    // エメラルド（グループC）の情報を表示
-    if (emeraldWealth) {
-        emeraldWealth.textContent = groups.C.totalWealth.toLocaleString();
-    }
-    if (emeraldRate) {
-        emeraldRate.textContent = `1 : ${rates.C}`;
     }
 }
 
@@ -774,51 +587,6 @@ function showFloatingText(x, y, text) {
     }, 1000);
 }
 
-async function onTradeSubmit(e) {
-    e.preventDefault();
-    
-    if (!player.group) {
-        return;
-    }
-    
-    const from = tradeFrom.value;
-    const to = tradeTo.value;
-    const amount = parseInt(tradeAmount.value);
-    
-    if (from === to) {
-        return;
-    }
-    
-    if (amount <= 0) {
-        return;
-    }
-    
-    try {
-        // モックAPIを呼び出し
-        const result = await mockTrade(player, from, to, amount, rates);
-        
-        // 状態を更新
-        player = result.player;
-        groups = result.groups;
-        rates = result.rates;
-        
-        // UIを更新
-        renderAll();
-        
-        // 状態を保存
-        saveGameState();
-        
-        // フォームをリセット
-        tradeAmount.value = '1';
-        
-        // モーダルを閉じる
-        tradeModal.style.display = 'none';
-    } catch (error) {
-        console.error(error);
-        alert(error.message); // エラーメッセージを表示
-    }
-}
-
 // ============================================
 // モックサーバー関数（Promiseを返す）
 // ============================================
@@ -845,78 +613,6 @@ async function mockClick(player, groups) {
                 groups: updatedGroups
             });
         }, 100); // 100msの遅延でサーバー通信をシミュレート
-    });
-}
-
-async function mockTrade(player, from, to, amount, rates) {
-    return new Promise((resolve, reject) => {
-        setTimeout(() => {
-            // 残高チェック
-            if (from === 'Common') {
-                if (player.commonCurrency < amount) {
-                    reject(new Error('残高不足: Common通貨が足りません'));
-                    return;
-                }
-            } else {
-                // プレイヤー個人のグループ通貨残高をチェック
-                if (player.groupCurrencies[from] < amount) {
-                    reject(new Error(`残高不足: ${groupNames[from]}通貨が足りません`));
-                    return;
-                }
-            }
-            
-            // レートを取得
-            let rate;
-            if (from === 'Common') {
-                // Common → グループ通貨: 1 / rate
-                rate = 1 / rates[to];
-            } else if (to === 'Common') {
-                // グループ通貨 → Common: rate
-                rate = rates[from];
-            } else {
-                // グループ通貨 → グループ通貨（簡易実装: Common経由）
-                rate = rates[from] / rates[to];
-            }
-            
-            const receivedAmount = Math.floor(amount * rate);
-            
-            // 資産を更新
-            const updatedPlayer = {
-                ...player,
-                groupCurrencies: { ...player.groupCurrencies }
-            };
-            const updatedGroups = { ...groups };
-            const updatedRates = { ...rates };
-            
-            // From通貨を減らす
-            if (from === 'Common') {
-                updatedPlayer.commonCurrency -= amount;
-            } else {
-                updatedPlayer.groupCurrencies[from] -= amount;
-            }
-            
-            // To通貨を増やす
-            if (to === 'Common') {
-                updatedPlayer.commonCurrency += receivedAmount;
-            } else {
-                updatedPlayer.groupCurrencies[to] += receivedAmount;
-            }
-            
-            // レートを更新（グループ通貨 ↔ Common のみ）
-            if (from !== 'Common' && to === 'Common') {
-                // グループ通貨を売ってCommonを買う → グループ通貨安・Common高
-                updatedRates[from] = Math.min(4, Math.max(1, updatedRates[from] + 1));
-            } else if (from === 'Common' && to !== 'Common') {
-                // Commonを売ってグループ通貨を買う → グループ通貨高・Common低
-                updatedRates[to] = Math.min(4, Math.max(1, updatedRates[to] - 1));
-            }
-            
-            resolve({
-                player: updatedPlayer,
-                groups: updatedGroups,
-                rates: updatedRates
-            });
-        }, 100);
     });
 }
 
