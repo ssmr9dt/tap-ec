@@ -33,24 +33,123 @@ let lastClickTime = 0;
 const CLICK_COOLDOWN = 200; // 0.2秒（200ミリ秒）
 
 // ============================================
+// グループ名マッピング
+// ============================================
+const groupNames = {
+    A: 'ルビー',
+    B: 'サファイア',
+    C: 'エメラルド',
+    D: 'トパーズ'
+};
+
+const groupColors = {
+    A: '#e91e63', // ルビー（赤）
+    B: '#2196f3', // サファイア（青）
+    C: '#4caf50', // エメラルド（緑）
+    D: '#ffc107'  // トパーズ（黄）
+};
+
+// ============================================
+// localStorage管理関数
+// ============================================
+const STORAGE_KEY = 'clicker-game-state';
+
+function saveGameState() {
+    try {
+        const gameState = {
+            player: player,
+            groups: groups,
+            rates: rates,
+            clickCount: clickCount,
+            timestamp: Date.now()
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(gameState));
+    } catch (error) {
+        console.error('Failed to save game state:', error);
+    }
+}
+
+function loadGameState() {
+    try {
+        const savedState = localStorage.getItem(STORAGE_KEY);
+        if (savedState) {
+            const gameState = JSON.parse(savedState);
+            
+            // データの整合性チェック
+            if (gameState.player && gameState.groups && gameState.rates) {
+                player = {
+                    group: gameState.player.group || null,
+                    commonCurrency: gameState.player.commonCurrency || 0,
+                    groupCurrencies: gameState.player.groupCurrencies || {
+                        A: 0,
+                        B: 0,
+                        C: 0,
+                        D: 0
+                    }
+                };
+                
+                groups = gameState.groups || {
+                    A: { totalWealth: 0 },
+                    B: { totalWealth: 0 },
+                    C: { totalWealth: 0 },
+                    D: { totalWealth: 0 }
+                };
+                
+                rates = gameState.rates || {
+                    A: 1,
+                    B: 1,
+                    C: 1,
+                    D: 1
+                };
+                
+                clickCount = gameState.clickCount || 0;
+                
+                return true;
+            }
+        }
+    } catch (error) {
+        console.error('Failed to load game state:', error);
+    }
+    return false;
+}
+
+function clearGameState() {
+    try {
+        localStorage.removeItem(STORAGE_KEY);
+    } catch (error) {
+        console.error('Failed to clear game state:', error);
+    }
+}
+
+// ============================================
 // DOM要素の取得
 // ============================================
 const groupSelectModal = document.getElementById('group-select-modal');
 const gameContainer = document.getElementById('game-container');
 const mainContent = document.querySelector('.main-content');
 const header = document.querySelector('.header');
-const footer = document.querySelector('.footer');
 const groupButtons = document.querySelectorAll('.group-btn');
 const clickButton = document.getElementById('click-button');
 const clickCountDisplay = document.getElementById('click-count');
 const playerGroupDisplay = document.getElementById('player-group');
-const playerCommonValue = document.getElementById('player-common-value');
 const groupTableBody = document.getElementById('group-table-body');
 const rateTableBody = document.getElementById('rate-table-body');
 const tradeForm = document.getElementById('trade-form');
 const tradeFrom = document.getElementById('trade-from');
 const tradeTo = document.getElementById('trade-to');
 const tradeAmount = document.getElementById('trade-amount');
+const tradeModal = document.getElementById('trade-modal');
+const tradeButton = document.getElementById('trade-button');
+const closeTradeModal = document.getElementById('close-trade-modal');
+const cancelTrade = document.getElementById('cancel-trade');
+const groupWealthModal = document.getElementById('group-wealth-modal');
+const groupWealthButton = document.getElementById('group-wealth-button');
+const closeGroupWealthModal = document.getElementById('close-group-wealth-modal');
+const exchangeRateModal = document.getElementById('exchange-rate-modal');
+const exchangeRateButton = document.getElementById('exchange-rate-button');
+const closeExchangeRateModal = document.getElementById('close-exchange-rate-modal');
+const emeraldWealth = document.getElementById('emerald-wealth');
+const emeraldRate = document.getElementById('emerald-rate');
 
 // ============================================
 // 初期化関数
@@ -90,13 +189,17 @@ function init() {
 
     // ゲームコンテナ全体のクリックイベントリスナー（一画面全体）
     gameContainer.addEventListener('click', (e) => {
-        // フォーム、ボタン、テーブル、リンクなどのインタラクティブ要素をクリックした場合は無視
+        // フォーム、ボタン、テーブル、リンク、モーダルなどのインタラクティブ要素をクリックした場合は無視
         if (e.target.closest('form') || 
             e.target.closest('button') || 
             e.target.closest('input') || 
             e.target.closest('select') ||
             e.target.closest('table') ||
-            e.target.closest('a')) {
+            e.target.closest('a') ||
+            e.target.closest('.modal') ||
+            e.target.closest('#trade-modal') ||
+            e.target.closest('#group-wealth-modal') ||
+            e.target.closest('#exchange-rate-modal')) {
             return;
         }
         // クリック位置を確実に取得
@@ -116,7 +219,8 @@ function init() {
             e.target.closest('input') || 
             e.target.closest('select') ||
             e.target.closest('table') ||
-            e.target.closest('a')) {
+            e.target.closest('a') ||
+            e.target.closest('.modal')) {
             return;
         }
         e.preventDefault(); // デフォルトの動作を防ぐ
@@ -131,6 +235,105 @@ function init() {
 
     // トレードフォームのイベントリスナー
     tradeForm.addEventListener('submit', onTradeSubmit);
+
+    // トレードモーダルの開閉イベントリスナー
+    if (tradeButton && tradeModal) {
+        tradeButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            tradeModal.style.display = 'flex';
+        });
+    } else {
+        console.error('Trade button or modal not found:', { tradeButton, tradeModal });
+    }
+
+    if (closeTradeModal && tradeModal) {
+        closeTradeModal.addEventListener('click', () => {
+            tradeModal.style.display = 'none';
+        });
+    }
+
+    if (cancelTrade && tradeModal) {
+        cancelTrade.addEventListener('click', () => {
+            tradeModal.style.display = 'none';
+        });
+    }
+
+    // モーダル外クリックで閉じる
+    if (tradeModal) {
+        tradeModal.addEventListener('click', (e) => {
+            if (e.target === tradeModal) {
+                tradeModal.style.display = 'none';
+            }
+        });
+    }
+
+    // グループ総資産モーダルの開閉イベントリスナー
+    if (groupWealthButton && groupWealthModal) {
+        groupWealthButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            groupWealthModal.style.display = 'flex';
+        });
+    } else {
+        console.error('Group wealth button or modal not found:', { groupWealthButton, groupWealthModal });
+    }
+
+    if (closeGroupWealthModal && groupWealthModal) {
+        closeGroupWealthModal.addEventListener('click', () => {
+            groupWealthModal.style.display = 'none';
+        });
+    }
+
+    // グループ総資産モーダル外クリックで閉じる
+    if (groupWealthModal) {
+        groupWealthModal.addEventListener('click', (e) => {
+            if (e.target === groupWealthModal) {
+                groupWealthModal.style.display = 'none';
+            }
+        });
+    }
+
+    // 為替レートモーダルの開閉イベントリスナー
+    if (exchangeRateButton && exchangeRateModal) {
+        exchangeRateButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            exchangeRateModal.style.display = 'flex';
+        });
+    } else {
+        console.error('Exchange rate button or modal not found:', { exchangeRateButton, exchangeRateModal });
+    }
+
+    if (closeExchangeRateModal && exchangeRateModal) {
+        closeExchangeRateModal.addEventListener('click', () => {
+            exchangeRateModal.style.display = 'none';
+        });
+    }
+
+    // 為替レートモーダル外クリックで閉じる
+    if (exchangeRateModal) {
+        exchangeRateModal.addEventListener('click', (e) => {
+            if (e.target === exchangeRateModal) {
+                exchangeRateModal.style.display = 'none';
+            }
+        });
+    }
+
+    // ESCキーでモーダルを閉じる
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            if (tradeModal.style.display === 'flex') {
+                tradeModal.style.display = 'none';
+            }
+            if (groupWealthModal.style.display === 'flex') {
+                groupWealthModal.style.display = 'none';
+            }
+            if (exchangeRateModal.style.display === 'flex') {
+                exchangeRateModal.style.display = 'none';
+            }
+        }
+    });
 
     // モックサーバーから初期状態を読み込む（実際はローカルで初期値セット）
     loadInitialState();
@@ -209,21 +412,65 @@ function selectGroup(group) {
     gameContainer.style.display = 'flex';
     
     // プレイヤーグループの色を設定
-    const groupColors = {
-        A: '#ff6b6b',
-        B: '#4ecdc4',
-        C: '#45b7d1',
-        D: '#f9ca24'
-    };
-    playerGroupDisplay.style.backgroundColor = groupColors[group];
+    if (playerGroupDisplay) {
+        playerGroupDisplay.style.backgroundColor = groupColors[group];
+    }
+    
+    // クリックボタンにグループクラスを追加
+    const clickButton = document.getElementById('click-button');
+    if (clickButton) {
+        // 既存のグループクラスを削除
+        clickButton.classList.remove('group-ruby', 'group-sapphire', 'group-emerald', 'group-topaz');
+        // 新しいグループクラスを追加
+        const groupClassMap = {
+            A: 'group-ruby',
+            B: 'group-sapphire',
+            C: 'group-emerald',
+            D: 'group-topaz'
+        };
+        clickButton.classList.add(groupClassMap[group]);
+    }
     
     renderAll();
+    
+    // 状態を保存
+    saveGameState();
 }
 
-// 初期状態の読み込み（モック）
+// 初期状態の読み込み（localStorageから復元）
 function loadInitialState() {
-    // 初期値は既に設定済み（全て0、レートは1）
-    // 将来的にサーバーから取得する処理に置き換え可能
+    const loaded = loadGameState();
+    if (loaded && player.group) {
+        // グループが選択されている場合は、ゲーム画面を表示
+        groupSelectModal.style.display = 'none';
+        gameContainer.style.display = 'flex';
+        
+        // プレイヤーグループの色を設定
+        if (playerGroupDisplay) {
+            playerGroupDisplay.style.backgroundColor = groupColors[player.group];
+        }
+        
+        // クリックボタンにグループクラスを追加
+        const clickButton = document.getElementById('click-button');
+        if (clickButton) {
+            // 既存のグループクラスを削除
+            clickButton.classList.remove('group-ruby', 'group-sapphire', 'group-emerald', 'group-topaz');
+            // 新しいグループクラスを追加
+            const groupClassMap = {
+                A: 'group-ruby',
+                B: 'group-sapphire',
+                C: 'group-emerald',
+                D: 'group-topaz'
+            };
+            clickButton.classList.add(groupClassMap[player.group]);
+        }
+        
+        // UIを更新
+        renderAll();
+    } else {
+        // 保存された状態がない場合は初期状態
+        // 初期値は既に設定済み（全て0、レートは1）
+    }
 }
 
 // ============================================
@@ -233,12 +480,17 @@ function renderAll() {
     renderPlayerInfo();
     renderGroupTable();
     renderRateTable();
+    renderEmeraldInfo();
+    
+    // クリック数の表示も更新
+    if (clickCountDisplay) {
+        clickCountDisplay.textContent = clickCount;
+    }
 }
 
 function renderPlayerInfo() {
-    if (player.group) {
-        playerGroupDisplay.textContent = `Group ${player.group}`;
-        playerCommonValue.textContent = player.commonCurrency.toLocaleString();
+    if (player.group && playerGroupDisplay) {
+        playerGroupDisplay.textContent = groupNames[player.group];
     }
 }
 
@@ -246,13 +498,18 @@ function renderGroupTable() {
     groupTableBody.innerHTML = '';
     
     Object.keys(groups).forEach(group => {
+        // エメラルド（C）は左カラムに表示するので、テーブルから除外
+        if (group === 'C') {
+            return;
+        }
+        
         const row = document.createElement('tr');
         const groupCell = document.createElement('td');
         const wealthCell = document.createElement('td');
         
         const badge = document.createElement('span');
         badge.className = `group-badge group-${group}`;
-        badge.textContent = `Group ${group}`;
+        badge.textContent = groupNames[group];
         groupCell.appendChild(badge);
         
         wealthCell.textContent = groups[group].totalWealth.toLocaleString();
@@ -273,11 +530,16 @@ function renderRateTable() {
     rateTableBody.innerHTML = '';
     
     Object.keys(rates).forEach(group => {
+        // エメラルド（C）は左カラムに表示するので、テーブルから除外
+        if (group === 'C') {
+            return;
+        }
+        
         const row = document.createElement('tr');
         const pairCell = document.createElement('td');
         const rateCell = document.createElement('td');
         
-        pairCell.textContent = `${group} : Common`;
+        pairCell.textContent = `${groupNames[group]} : Common`;
         rateCell.textContent = `1 : ${rates[group]}`;
         
         // プレイヤーの所属グループを強調
@@ -290,6 +552,16 @@ function renderRateTable() {
         row.appendChild(rateCell);
         rateTableBody.appendChild(row);
     });
+}
+
+function renderEmeraldInfo() {
+    // エメラルド（グループC）の情報を表示
+    if (emeraldWealth) {
+        emeraldWealth.textContent = groups.C.totalWealth.toLocaleString();
+    }
+    if (emeraldRate) {
+        emeraldRate.textContent = `1 : ${rates.C}`;
+    }
 }
 
 // ============================================
@@ -353,6 +625,9 @@ async function onClickButton(event) {
         // UIを更新
         clickCountDisplay.textContent = clickCount;
         renderAll();
+        
+        // 状態を保存
+        saveGameState();
         
         // 「+1」が飛ぶアニメーションを表示（少し遅延させて確実に表示）
         setTimeout(() => {
@@ -456,10 +731,17 @@ async function onTradeSubmit(e) {
         // UIを更新
         renderAll();
         
+        // 状態を保存
+        saveGameState();
+        
         // フォームをリセット
         tradeAmount.value = '1';
+        
+        // モーダルを閉じる
+        tradeModal.style.display = 'none';
     } catch (error) {
         console.error(error);
+        alert(error.message); // エラーメッセージを表示
     }
 }
 
@@ -500,7 +782,7 @@ async function mockTrade(player, from, to, amount, rates) {
             } else {
                 // プレイヤー個人のグループ通貨残高をチェック
                 if (player.groupCurrencies[from] < amount) {
-                    reject(new Error(`残高不足: Group ${from}通貨が足りません`));
+                    reject(new Error(`残高不足: ${groupNames[from]}通貨が足りません`));
                     return;
                 }
             }
@@ -569,3 +851,4 @@ if (document.readyState === 'loading') {
 } else {
     init();
 }
+

@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>クリッカーゲーム</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -12,10 +15,10 @@
         <div class="modal-content">
             <h2>グループを選択してください</h2>
             <div class="group-buttons">
-                <button class="group-btn" data-group="A" style="background-color: #ff6b6b;">Group A</button>
-                <button class="group-btn" data-group="B" style="background-color: #4ecdc4;">Group B</button>
-                <button class="group-btn" data-group="C" style="background-color: #45b7d1;">Group C</button>
-                <button class="group-btn" data-group="D" style="background-color: #f9ca24;">Group D</button>
+                <button class="group-btn" data-group="A" style="background-color: #e91e63;">ルビー</button>
+                <button class="group-btn" data-group="B" style="background-color: #2196f3;">サファイア</button>
+                <button class="group-btn" data-group="C" style="background-color: #4caf50;">エメラルド</button>
+                <button class="group-btn" data-group="D" style="background-color: #ffc107;">トパーズ</button>
             </div>
         </div>
     </div>
@@ -25,12 +28,16 @@
         <!-- 上部ヘッダー -->
         <header class="header">
             <div class="header-left">
-                <h1 class="game-title">クリッカーゲーム</h1>
+                <h1 class="game-title">
+                    <span class="title-gem gem-ruby">💎</span>
+                    <span class="title-text">宝石連盟オンライン</span>
+                    <span class="title-gem gem-sapphire">💎</span>
+                </h1>
             </div>
             <div class="header-right">
                 <div class="player-info">
                     <span id="player-group" class="player-group"></span>
-                    <span id="player-common" class="player-currency">Common: <span id="player-common-value">0</span></span>
+                    <button id="trade-button" class="trade-button">トレード</button>
                 </div>
             </div>
         </header>
@@ -39,82 +46,140 @@
         <main class="main-content">
             <!-- 左カラム：クリックボタン -->
             <div class="left-column">
-                <button id="click-button" class="click-button">CLICK</button>
+                <button id="click-button" class="click-button gem-button">
+                    <svg class="gem-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <!-- 光沢のグラデーション -->
+                            <linearGradient id="shine" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:rgba(255,255,255,0.8);stop-opacity:1" />
+                                <stop offset="50%" style="stop-color:rgba(255,255,255,0.3);stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:rgba(255,255,255,0);stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        <!-- 宝石の形状（ダイヤモンド型） -->
+                        <polygon points="50,10 20,40 30,90 70,90 80,40" class="gem-shape"/>
+                        <polygon points="50,10 20,40 50,50 80,40" class="gem-top"/>
+                        <polygon points="20,40 30,90 50,70 50,50" class="gem-left"/>
+                        <polygon points="80,40 50,50 50,70 70,90" class="gem-right"/>
+                        <polygon points="30,90 50,70 70,90" class="gem-bottom"/>
+                        <!-- 光沢のハイライト -->
+                        <polygon points="50,10 20,40 50,50 80,40" fill="url(#shine)" opacity="0.6" class="gem-highlight"/>
+                        <circle cx="50" cy="30" r="8" fill="rgba(255,255,255,0.9)" class="gem-sparkle"/>
+                        <circle cx="35" cy="50" r="4" fill="rgba(255,255,255,0.7)" class="gem-sparkle"/>
+                        <circle cx="65" cy="50" r="4" fill="rgba(255,255,255,0.7)" class="gem-sparkle"/>
+                    </svg>
+                    <span class="gem-text">CLICK</span>
+                </button>
                 <div class="click-info">
                     <p>クリック数: <span id="click-count">0</span></p>
                 </div>
+                <!-- エメラルドグループ情報 -->
+                <div class="emerald-info">
+                    <div class="emerald-info-item">
+                        <span class="emerald-label">エメラルド総資産:</span>
+                        <span id="emerald-wealth" class="emerald-value">0</span>
+                    </div>
+                    <div class="emerald-info-item">
+                        <span class="emerald-label">エメラルドレート:</span>
+                        <span id="emerald-rate" class="emerald-value">1 : 1</span>
+                    </div>
+                </div>
             </div>
 
-            <!-- 右カラム：グループ情報と為替レート -->
+            <!-- 右カラム：情報ボタン -->
             <div class="right-column">
-                <!-- グループ総資産テーブル -->
-                <div class="info-section">
-                    <h3>グループ総資産</h3>
-                    <table id="group-table" class="data-table">
-                        <thead>
-                            <tr>
-                                <th>グループ</th>
-                                <th>総資産</th>
-                            </tr>
-                        </thead>
-                        <tbody id="group-table-body">
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- 為替レートテーブル -->
-                <div class="info-section">
-                    <h3>為替レート</h3>
-                    <table id="rate-table" class="data-table">
-                        <thead>
-                            <tr>
-                                <th>通貨ペア</th>
-                                <th>レート</th>
-                            </tr>
-                        </thead>
-                        <tbody id="rate-table-body">
-                        </tbody>
-                    </table>
+                <div class="info-buttons">
+                    <button id="group-wealth-button" class="info-button">グループ総資産</button>
+                    <button id="exchange-rate-button" class="info-button">為替レート</button>
                 </div>
             </div>
         </main>
+    </div>
 
-        <!-- 下部エリア：トレードフォームとログ -->
-        <footer class="footer">
-            <!-- トレードフォーム -->
-            <div class="trade-section">
-                <h3>トレード</h3>
-                <form id="trade-form" class="trade-form">
-                    <div class="form-row">
-                        <label>
-                            From通貨:
-                            <select id="trade-from" name="from">
-                                <option value="Common">Common</option>
-                                <option value="A">A</option>
-                                <option value="B">B</option>
-                                <option value="C">C</option>
-                                <option value="D">D</option>
-                            </select>
-                        </label>
-                        <label>
-                            To通貨:
-                            <select id="trade-to" name="to">
-                                <option value="Common">Common</option>
-                                <option value="A">A</option>
-                                <option value="B">B</option>
-                                <option value="C">C</option>
-                                <option value="D">D</option>
-                            </select>
-                        </label>
-                        <label>
-                            数量:
-                            <input type="number" id="trade-amount" name="amount" min="1" value="1" required>
-                        </label>
-                        <button type="submit" class="submit-btn">送信</button>
-                    </div>
-                </form>
+    <!-- トレードモーダル -->
+    <div id="trade-modal" class="modal" style="display: none;">
+        <div class="modal-content trade-modal-content">
+            <div class="modal-header">
+                <h2>トレード</h2>
+                <button id="close-trade-modal" class="close-button">×</button>
             </div>
-        </footer>
+            <form id="trade-form" class="trade-form">
+                <div class="form-row">
+                    <label>
+                        From通貨:
+                        <select id="trade-from" name="from">
+                            <option value="Common">Common</option>
+                            <option value="A">ルビー</option>
+                            <option value="B">サファイア</option>
+                            <option value="C">エメラルド</option>
+                            <option value="D">トパーズ</option>
+                        </select>
+                    </label>
+                    <label>
+                        To通貨:
+                        <select id="trade-to" name="to">
+                            <option value="Common">Common</option>
+                            <option value="A">ルビー</option>
+                            <option value="B">サファイア</option>
+                            <option value="C">エメラルド</option>
+                            <option value="D">トパーズ</option>
+                        </select>
+                    </label>
+                    <label>
+                        数量:
+                        <input type="number" id="trade-amount" name="amount" min="1" value="1" required>
+                    </label>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="submit-btn">送信</button>
+                    <button type="button" id="cancel-trade" class="cancel-btn">キャンセル</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- グループ総資産モーダル -->
+    <div id="group-wealth-modal" class="modal" style="display: none;">
+        <div class="modal-content info-modal-content">
+            <div class="modal-header">
+                <h2>グループ総資産</h2>
+                <button id="close-group-wealth-modal" class="close-button">×</button>
+            </div>
+            <div class="modal-body">
+                <table id="group-table" class="data-table">
+                    <thead>
+                        <tr>
+                            <th>グループ</th>
+                            <th>総資産</th>
+                        </tr>
+                    </thead>
+                    <tbody id="group-table-body">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- 為替レートモーダル -->
+    <div id="exchange-rate-modal" class="modal" style="display: none;">
+        <div class="modal-content info-modal-content">
+            <div class="modal-header">
+                <h2>為替レート</h2>
+                <button id="close-exchange-rate-modal" class="close-button">×</button>
+            </div>
+            <div class="modal-body">
+                <table id="rate-table" class="data-table">
+                    <thead>
+                        <tr>
+                            <th>通貨ペア</th>
+                            <th>レート</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rate-table-body">
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
     <script src="main.js" defer></script>
