@@ -32,29 +32,43 @@
         <main class="main-content">
             <!-- 左カラム：クリックボタン -->
             <div class="left-column">
-                <button id="click-button" class="click-button gem-button">
-                    <svg class="gem-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <button id="click-button" class="click-button cave-button">
+                    <svg class="cave-icon" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
                         <defs>
-                            <!-- 光沢のグラデーション -->
-                            <linearGradient id="shine" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" style="stop-color:rgba(255,255,255,0.8);stop-opacity:1" />
-                                <stop offset="50%" style="stop-color:rgba(255,255,255,0.3);stop-opacity:1" />
-                                <stop offset="100%" style="stop-color:rgba(255,255,255,0);stop-opacity:1" />
+                            <!-- 洞窟のグラデーション -->
+                            <linearGradient id="caveGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#2c1810;stop-opacity:1" />
+                                <stop offset="50%" style="stop-color:#1a0f08;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#0a0503;stop-opacity:1" />
                             </linearGradient>
+                            <radialGradient id="caveLight" cx="50%" cy="30%" r="60%">
+                                <stop offset="0%" style="stop-color:#4a3a2a;stop-opacity:0.8" />
+                                <stop offset="100%" style="stop-color:#1a0f08;stop-opacity:1" />
+                            </radialGradient>
                         </defs>
-                        <!-- 宝石の形状（ダイヤモンド型） -->
-                        <polygon points="50,10 20,40 30,90 70,90 80,40" class="gem-shape"/>
-                        <polygon points="50,10 20,40 50,50 80,40" class="gem-top"/>
-                        <polygon points="20,40 30,90 50,70 50,50" class="gem-left"/>
-                        <polygon points="80,40 50,50 50,70 70,90" class="gem-right"/>
-                        <polygon points="30,90 50,70 70,90" class="gem-bottom"/>
-                        <!-- 光沢のハイライト -->
-                        <polygon points="50,10 20,40 50,50 80,40" fill="url(#shine)" opacity="0.6" class="gem-highlight"/>
-                        <circle cx="50" cy="30" r="8" fill="rgba(255,255,255,0.9)" class="gem-sparkle"/>
-                        <circle cx="35" cy="50" r="4" fill="rgba(255,255,255,0.7)" class="gem-sparkle"/>
-                        <circle cx="65" cy="50" r="4" fill="rgba(255,255,255,0.7)" class="gem-sparkle"/>
+                        <!-- 洞窟の外側（暗い部分） -->
+                        <rect x="0" y="0" width="400" height="300" fill="url(#caveGradient)"/>
+                        <!-- 洞窟の入口形状 -->
+                        <path d="M 50 300 L 80 200 L 120 150 L 160 120 L 200 100 L 240 120 L 280 150 L 320 200 L 350 300 Z" fill="url(#caveLight)" class="cave-entrance"/>
+                        <!-- 洞窟の内部の暗い部分 -->
+                        <path d="M 100 300 L 120 220 L 150 180 L 200 150 L 250 180 L 280 220 L 300 300 Z" fill="#0a0503" opacity="0.7" class="cave-interior"/>
+                        <!-- 洞窟の奥の光 -->
+                        <ellipse cx="200" cy="160" rx="60" ry="40" fill="#6b5a4a" opacity="0.3" class="cave-back-light"/>
+                        <!-- 岩の質感 -->
+                        <path d="M 80 200 Q 100 190 120 200 T 160 200 T 200 200 T 240 200 T 280 200 T 320 200" stroke="#3a2a1a" stroke-width="2" fill="none" opacity="0.5" class="cave-texture"/>
+                        <path d="M 100 250 Q 120 240 140 250 T 180 250 T 220 250 T 260 250 T 300 250" stroke="#3a2a1a" stroke-width="2" fill="none" opacity="0.5" class="cave-texture"/>
+                        <!-- ツルハシのアイコン -->
+                        <g class="pickaxe-icon">
+                            <!-- ツルハシの柄 -->
+                            <rect x="197" y="180" width="6" height="50" fill="#8b7355" rx="2"/>
+                            <!-- ツルハシの頭 -->
+                            <path d="M 185 170 L 195 175 L 195 185 L 185 190 Z" fill="#5a5a5a"/>
+                            <path d="M 215 170 L 205 175 L 205 185 L 215 190 Z" fill="#5a5a5a"/>
+                            <!-- ツルハシの中央部分 -->
+                            <rect x="195" y="175" width="10" height="10" fill="#4a4a4a" rx="2"/>
+                        </g>
                     </svg>
-                    <span class="gem-text">CLICK</span>
+                    <span class="cave-text">掘る</span>
                 </button>
                 <!-- グループ選択アイコン -->
                 <div class="group-icons">

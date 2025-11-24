@@ -304,21 +304,6 @@ function selectGroup(group) {
         }
     });
     
-    // クリックボタンにグループクラスを追加
-    const clickButton = document.getElementById('click-button');
-    if (clickButton) {
-        // 既存のグループクラスを削除
-        clickButton.classList.remove('group-ruby', 'group-sapphire', 'group-emerald', 'group-topaz');
-        // 新しいグループクラスを追加
-        const groupClassMap = {
-            A: 'group-ruby',
-            B: 'group-sapphire',
-            C: 'group-emerald',
-            D: 'group-topaz'
-        };
-        clickButton.classList.add(groupClassMap[group]);
-    }
-    
     renderAll();
     renderGroupValues();
     
@@ -349,21 +334,6 @@ function loadInitialState() {
                 btn.style.filter = 'drop-shadow(0 0 5px rgba(0, 0, 0, 0.5))';
             }
         });
-        
-        // クリックボタンにグループクラスを追加
-        const clickButton = document.getElementById('click-button');
-        if (clickButton) {
-            // 既存のグループクラスを削除
-            clickButton.classList.remove('group-ruby', 'group-sapphire', 'group-emerald', 'group-topaz');
-            // 新しいグループクラスを追加
-            const groupClassMap = {
-                A: 'group-ruby',
-                B: 'group-sapphire',
-                C: 'group-emerald',
-                D: 'group-topaz'
-            };
-            clickButton.classList.add(groupClassMap[player.group]);
-        }
         
         // UIを更新
         renderAll();
@@ -454,6 +424,15 @@ async function onClickButton(event) {
     
     // クリックエフェクトを表示（一画面内に収める）
     showClickEffect(clickX, clickY);
+    
+    // ツルハシのアニメーションをトリガー
+    const clickButton = document.getElementById('click-button');
+    if (clickButton) {
+        clickButton.classList.add('clicking');
+        setTimeout(() => {
+            clickButton.classList.remove('clicking');
+        }, 300);
+    }
     
     try {
         // モックAPIを呼び出し
