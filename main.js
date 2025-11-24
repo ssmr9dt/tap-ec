@@ -150,15 +150,25 @@ const exchangeRateButton = document.getElementById('exchange-rate-button');
 const closeExchangeRateModal = document.getElementById('close-exchange-rate-modal');
 const emeraldWealth = document.getElementById('emerald-wealth');
 const emeraldRate = document.getElementById('emerald-rate');
-const changeGroupButton = document.getElementById('change-group-button');
+const groupSelectButtons = document.querySelectorAll('.group-select-btn');
 
 // ============================================
 // 初期化関数
 // ============================================
 function init() {
-    // グループ選択ボタンのイベントリスナー
+    // グループ選択ボタンのイベントリスナー（モーダル内）
     groupButtons.forEach(btn => {
         btn.addEventListener('click', (e) => {
+            const selectedGroup = e.target.dataset.group;
+            selectGroup(selectedGroup);
+        });
+    });
+
+    // ヘッダーのグループ選択ボタンのイベントリスナー
+    groupSelectButtons.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
             const selectedGroup = e.target.dataset.group;
             selectGroup(selectedGroup);
         });
@@ -327,19 +337,6 @@ function init() {
         }
     });
 
-    // グループ変更ボタンのイベントリスナー
-    if (changeGroupButton) {
-        changeGroupButton.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            // モーダルのタイトルを変更
-            const modalTitle = groupSelectModal.querySelector('h2');
-            if (modalTitle) {
-                modalTitle.textContent = 'グループを変更してください';
-            }
-            groupSelectModal.style.display = 'flex';
-        });
-    }
 
     // グループ選択モーダル外クリックで閉じる（ゲーム中のみ）
     if (groupSelectModal) {
@@ -471,10 +468,25 @@ function loadInitialState() {
         groupSelectModal.style.display = 'none';
         gameContainer.style.display = 'flex';
         
-        // プレイヤーグループの色を設定
-        if (playerGroupDisplay) {
-            playerGroupDisplay.style.backgroundColor = groupColors[player.group];
-        }
+    // プレイヤーグループの色を設定
+    if (playerGroupDisplay) {
+        playerGroupDisplay.style.backgroundColor = groupColors[player.group];
+        playerGroupDisplay.textContent = groupNames[player.group];
+    }
+    
+        // ヘッダーのグループ選択ボタンのスタイルを更新
+        groupSelectButtons.forEach(btn => {
+            const btnGroup = btn.dataset.group;
+            if (btnGroup === player.group) {
+                btn.style.opacity = '1';
+                btn.style.transform = 'scale(1.1)';
+                btn.style.boxShadow = `0 0 20px ${groupColors[player.group]}, inset 0 0 20px rgba(255, 255, 255, 0.3)`;
+            } else {
+                btn.style.opacity = '0.6';
+                btn.style.transform = 'scale(1)';
+                btn.style.boxShadow = '0 0 15px rgba(0, 0, 0, 0.5), inset 0 0 15px rgba(255, 255, 255, 0.1)';
+            }
+        });
         
         // クリックボタンにグループクラスを追加
         const clickButton = document.getElementById('click-button');

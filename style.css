@@ -352,6 +352,66 @@ body::before {
     display: flex;
     gap: 20px;
     align-items: center;
+    flex-wrap: wrap;
+}
+
+.group-selector {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.group-select-btn {
+    padding: 8px 16px;
+    font-size: 0.7rem;
+    font-weight: 900;
+    font-family: 'Press Start 2P', cursive;
+    color: white;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: 0;
+    cursor: pointer;
+    transition: all 0.2s;
+    touch-action: manipulation;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 
+        0 0 15px rgba(0, 0, 0, 0.5),
+        inset 0 0 15px rgba(255, 255, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+    opacity: 0.6;
+}
+
+.group-select-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s;
+}
+
+.group-select-btn:hover::before {
+    left: 100%;
+}
+
+.group-select-btn:hover {
+    opacity: 1;
+    transform: scale(1.05);
+    box-shadow: 
+        0 0 20px rgba(255, 255, 255, 0.4),
+        0 5px 15px rgba(0, 0, 0, 0.6),
+        inset 0 0 20px rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.6);
+}
+
+.group-select-btn:active {
+    transform: scale(0.95);
+    box-shadow: 
+        0 0 15px rgba(0, 0, 0, 0.4),
+        inset 0 0 15px rgba(255, 255, 255, 0.15);
 }
 
 .player-group {
@@ -1512,6 +1572,17 @@ body::before {
         flex-direction: column;
         gap: 10px;
         align-items: flex-end;
+    }
+
+    .group-selector {
+        flex-wrap: wrap;
+        justify-content: center;
+        width: 100%;
+    }
+
+    .group-select-btn {
+        font-size: 0.5rem;
+        padding: 6px 12px;
     }
 
     .trade-button {
