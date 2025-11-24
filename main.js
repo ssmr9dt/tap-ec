@@ -148,6 +148,8 @@ const closeGroupWealthModal = document.getElementById('close-group-wealth-modal'
 const exchangeRateModal = document.getElementById('exchange-rate-modal');
 const exchangeRateButton = document.getElementById('exchange-rate-button');
 const closeExchangeRateModal = document.getElementById('close-exchange-rate-modal');
+const emeraldWealth = document.getElementById('emerald-wealth');
+const emeraldRate = document.getElementById('emerald-rate');
 
 // ============================================
 // 初期化関数
@@ -478,6 +480,7 @@ function renderAll() {
     renderPlayerInfo();
     renderGroupTable();
     renderRateTable();
+    renderEmeraldInfo();
     
     // クリック数の表示も更新
     if (clickCountDisplay) {
@@ -495,6 +498,11 @@ function renderGroupTable() {
     groupTableBody.innerHTML = '';
     
     Object.keys(groups).forEach(group => {
+        // エメラルド（C）は左カラムに表示するので、テーブルから除外
+        if (group === 'C') {
+            return;
+        }
+        
         const row = document.createElement('tr');
         const groupCell = document.createElement('td');
         const wealthCell = document.createElement('td');
@@ -522,6 +530,11 @@ function renderRateTable() {
     rateTableBody.innerHTML = '';
     
     Object.keys(rates).forEach(group => {
+        // エメラルド（C）は左カラムに表示するので、テーブルから除外
+        if (group === 'C') {
+            return;
+        }
+        
         const row = document.createElement('tr');
         const pairCell = document.createElement('td');
         const rateCell = document.createElement('td');
@@ -539,6 +552,16 @@ function renderRateTable() {
         row.appendChild(rateCell);
         rateTableBody.appendChild(row);
     });
+}
+
+function renderEmeraldInfo() {
+    // エメラルド（グループC）の情報を表示
+    if (emeraldWealth) {
+        emeraldWealth.textContent = groups.C.totalWealth.toLocaleString();
+    }
+    if (emeraldRate) {
+        emeraldRate.textContent = `1 : ${rates.C}`;
+    }
 }
 
 // ============================================
