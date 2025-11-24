@@ -130,7 +130,6 @@ const mainContent = document.querySelector('.main-content');
 const header = document.querySelector('.header');
 const groupButtons = document.querySelectorAll('.group-btn');
 const clickButton = document.getElementById('click-button');
-const clickCountDisplay = document.getElementById('click-count');
 const playerGroupDisplay = document.getElementById('player-group');
 const groupTableBody = document.getElementById('group-table-body');
 const rateTableBody = document.getElementById('rate-table-body');
@@ -541,11 +540,6 @@ function renderAll() {
     renderRateTable();
     renderEmeraldInfo();
     renderGroupValues();
-    
-    // クリック数の表示も更新
-    if (clickCountDisplay) {
-        clickCountDisplay.textContent = clickCount;
-    }
 }
 
 function renderPlayerInfo() {
@@ -699,7 +693,6 @@ async function onClickButton(event) {
         clickCount++;
         
         // UIを更新
-        clickCountDisplay.textContent = clickCount;
         renderAll();
         
         // 状態を保存
