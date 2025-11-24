@@ -151,6 +151,7 @@ const closeExchangeRateModal = document.getElementById('close-exchange-rate-moda
 const emeraldWealth = document.getElementById('emerald-wealth');
 const emeraldRate = document.getElementById('emerald-rate');
 const groupSelectButtons = document.querySelectorAll('.group-select-btn');
+const groupIconButtons = document.querySelectorAll('.group-icon-btn');
 
 // ============================================
 // 初期化関数
@@ -169,8 +170,22 @@ function init() {
         btn.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();
-            const selectedGroup = e.target.dataset.group;
-            selectGroup(selectedGroup);
+            const selectedGroup = e.target.dataset.group || e.target.closest('.group-select-btn')?.dataset.group;
+            if (selectedGroup) {
+                selectGroup(selectedGroup);
+            }
+        });
+    });
+
+    // クリックボタン下のグループアイコンボタンのイベントリスナー
+    groupIconButtons.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const selectedGroup = e.target.closest('.group-icon-btn')?.dataset.group;
+            if (selectedGroup) {
+                selectGroup(selectedGroup);
+            }
         });
     });
 
@@ -437,7 +452,36 @@ function selectGroup(group) {
     // プレイヤーグループの色を設定
     if (playerGroupDisplay) {
         playerGroupDisplay.style.backgroundColor = groupColors[group];
+        playerGroupDisplay.textContent = groupNames[group];
     }
+    
+    // ヘッダーのグループ選択ボタンのスタイルを更新
+    groupSelectButtons.forEach(btn => {
+        const btnGroup = btn.dataset.group;
+        if (btnGroup === group) {
+            btn.style.opacity = '1';
+            btn.style.transform = 'scale(1.1)';
+            btn.style.boxShadow = `0 0 20px ${groupColors[group]}, inset 0 0 20px rgba(255, 255, 255, 0.3)`;
+        } else {
+            btn.style.opacity = '0.6';
+            btn.style.transform = 'scale(1)';
+            btn.style.boxShadow = '0 0 15px rgba(0, 0, 0, 0.5), inset 0 0 15px rgba(255, 255, 255, 0.1)';
+        }
+    });
+    
+    // クリックボタン下のグループアイコンボタンのスタイルを更新
+    groupIconButtons.forEach(btn => {
+        const btnGroup = btn.dataset.group;
+        if (btnGroup === group) {
+            btn.style.opacity = '1';
+            btn.style.transform = 'scale(1.2)';
+            btn.style.filter = `drop-shadow(0 0 15px ${groupColors[group]})`;
+        } else {
+            btn.style.opacity = '0.5';
+            btn.style.transform = 'scale(1)';
+            btn.style.filter = 'drop-shadow(0 0 5px rgba(0, 0, 0, 0.5))';
+        }
+    });
     
     // クリックボタンにグループクラスを追加
     const clickButton = document.getElementById('click-button');
@@ -485,6 +529,20 @@ function loadInitialState() {
                 btn.style.opacity = '0.6';
                 btn.style.transform = 'scale(1)';
                 btn.style.boxShadow = '0 0 15px rgba(0, 0, 0, 0.5), inset 0 0 15px rgba(255, 255, 255, 0.1)';
+            }
+        });
+        
+        // クリックボタン下のグループアイコンボタンのスタイルを更新
+        groupIconButtons.forEach(btn => {
+            const btnGroup = btn.dataset.group;
+            if (btnGroup === player.group) {
+                btn.style.opacity = '1';
+                btn.style.transform = 'scale(1.2)';
+                btn.style.filter = `drop-shadow(0 0 15px ${groupColors[player.group]})`;
+            } else {
+                btn.style.opacity = '0.5';
+                btn.style.transform = 'scale(1)';
+                btn.style.filter = 'drop-shadow(0 0 5px rgba(0, 0, 0, 0.5))';
             }
         });
         

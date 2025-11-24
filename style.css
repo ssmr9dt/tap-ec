@@ -990,6 +990,131 @@ body::before {
         0 5px 20px rgba(0, 0, 0, 0.4);
 }
 
+.group-icons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 0;
+}
+
+.group-icon-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    transition: all 0.3s ease;
+    opacity: 0.5;
+    filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.5));
+}
+
+.group-icon-btn:hover {
+    opacity: 0.8;
+    transform: scale(1.1);
+}
+
+.group-icon-btn:active {
+    transform: scale(0.95);
+}
+
+.group-icon {
+    width: 60px;
+    height: 60px;
+    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.5));
+}
+
+/* ルビーグループのアイコン */
+.group-icon-btn[data-group="A"] .gem-ruby-shape {
+    fill: #e91e63;
+    stroke: rgba(255, 255, 255, 0.9);
+    filter: drop-shadow(0 0 10px rgba(233, 30, 99, 0.8));
+}
+
+.group-icon-btn[data-group="A"] .gem-ruby-top {
+    fill: rgba(255, 255, 255, 0.95);
+    filter: drop-shadow(0 0 15px rgba(255, 255, 255, 1)) drop-shadow(0 0 25px rgba(233, 30, 99, 0.8));
+}
+
+.group-icon-btn[data-group="A"] .gem-ruby-left,
+.group-icon-btn[data-group="A"] .gem-ruby-right {
+    fill: rgba(233, 30, 99, 0.8);
+    filter: drop-shadow(0 0 8px rgba(233, 30, 99, 0.9));
+}
+
+.group-icon-btn[data-group="A"] .gem-ruby-bottom {
+    fill: rgba(233, 30, 99, 0.9);
+    filter: drop-shadow(0 0 10px rgba(233, 30, 99, 1));
+}
+
+/* サファイアグループのアイコン */
+.group-icon-btn[data-group="B"] .gem-sapphire-shape {
+    fill: #2196f3;
+    stroke: rgba(255, 255, 255, 0.9);
+    filter: drop-shadow(0 0 10px rgba(33, 150, 243, 0.8));
+}
+
+.group-icon-btn[data-group="B"] .gem-sapphire-top {
+    fill: rgba(255, 255, 255, 0.95);
+    filter: drop-shadow(0 0 15px rgba(255, 255, 255, 1)) drop-shadow(0 0 25px rgba(33, 150, 243, 0.8));
+}
+
+.group-icon-btn[data-group="B"] .gem-sapphire-left,
+.group-icon-btn[data-group="B"] .gem-sapphire-right {
+    fill: rgba(33, 150, 243, 0.8);
+    filter: drop-shadow(0 0 8px rgba(33, 150, 243, 0.9));
+}
+
+.group-icon-btn[data-group="B"] .gem-sapphire-bottom {
+    fill: rgba(33, 150, 243, 0.9);
+    filter: drop-shadow(0 0 10px rgba(33, 150, 243, 1));
+}
+
+/* エメラルドグループのアイコン */
+.group-icon-btn[data-group="C"] .gem-emerald-shape {
+    fill: #4caf50;
+    stroke: rgba(255, 255, 255, 0.9);
+    filter: drop-shadow(0 0 10px rgba(76, 175, 80, 0.8));
+}
+
+.group-icon-btn[data-group="C"] .gem-emerald-top {
+    fill: rgba(255, 255, 255, 0.95);
+    filter: drop-shadow(0 0 15px rgba(255, 255, 255, 1)) drop-shadow(0 0 25px rgba(76, 175, 80, 0.8));
+}
+
+.group-icon-btn[data-group="C"] .gem-emerald-left,
+.group-icon-btn[data-group="C"] .gem-emerald-right {
+    fill: rgba(76, 175, 80, 0.8);
+    filter: drop-shadow(0 0 8px rgba(76, 175, 80, 0.9));
+}
+
+.group-icon-btn[data-group="C"] .gem-emerald-bottom {
+    fill: rgba(76, 175, 80, 0.9);
+    filter: drop-shadow(0 0 10px rgba(76, 175, 80, 1));
+}
+
+/* トパーズグループのアイコン */
+.group-icon-btn[data-group="D"] .gem-topaz-shape {
+    fill: #ffc107;
+    stroke: rgba(255, 255, 255, 0.9);
+    filter: drop-shadow(0 0 10px rgba(255, 193, 7, 0.8));
+}
+
+.group-icon-btn[data-group="D"] .gem-topaz-top {
+    fill: rgba(255, 255, 255, 0.95);
+    filter: drop-shadow(0 0 15px rgba(255, 255, 255, 1)) drop-shadow(0 0 25px rgba(255, 193, 7, 0.8));
+}
+
+.group-icon-btn[data-group="D"] .gem-topaz-left,
+.group-icon-btn[data-group="D"] .gem-topaz-right {
+    fill: rgba(255, 193, 7, 0.8);
+    filter: drop-shadow(0 0 8px rgba(255, 193, 7, 0.9));
+}
+
+.group-icon-btn[data-group="D"] .gem-topaz-bottom {
+    fill: rgba(255, 193, 7, 0.9);
+    filter: drop-shadow(0 0 10px rgba(255, 193, 7, 1));
+}
+
 .click-info {
     text-align: center;
     color: white;
@@ -1583,6 +1708,16 @@ body::before {
     .group-select-btn {
         font-size: 0.5rem;
         padding: 6px 12px;
+    }
+
+    .group-icons {
+        gap: 10px;
+        margin: 15px 0;
+    }
+
+    .group-icon {
+        width: 45px;
+        height: 45px;
     }
 
     .trade-button {
