@@ -475,6 +475,7 @@ function selectGroup(group) {
     }
     
     renderAll();
+    renderGroupValues();
     
     // 状態を保存
     saveGameState();
@@ -525,9 +526,12 @@ function loadInitialState() {
         
         // UIを更新
         renderAll();
+        renderGroupValues();
     } else {
         // 保存された状態がない場合は初期状態
         // 初期値は既に設定済み（全て0、レートは1）
+        // 初期表示のためグループ値を表示
+        renderGroupValues();
     }
 }
 
@@ -620,17 +624,17 @@ function renderEmeraldInfo() {
 
 function renderGroupValues() {
     // 各グループの個人資産を表示
-    if (groupValueA) {
-        groupValueA.textContent = player.groupCurrencies.A.toLocaleString();
+    if (groupValueA && player.groupCurrencies) {
+        groupValueA.textContent = (player.groupCurrencies.A || 0).toLocaleString();
     }
-    if (groupValueB) {
-        groupValueB.textContent = player.groupCurrencies.B.toLocaleString();
+    if (groupValueB && player.groupCurrencies) {
+        groupValueB.textContent = (player.groupCurrencies.B || 0).toLocaleString();
     }
-    if (groupValueC) {
-        groupValueC.textContent = player.groupCurrencies.C.toLocaleString();
+    if (groupValueC && player.groupCurrencies) {
+        groupValueC.textContent = (player.groupCurrencies.C || 0).toLocaleString();
     }
-    if (groupValueD) {
-        groupValueD.textContent = player.groupCurrencies.D.toLocaleString();
+    if (groupValueD && player.groupCurrencies) {
+        groupValueD.textContent = (player.groupCurrencies.D || 0).toLocaleString();
     }
 }
 
@@ -692,8 +696,9 @@ async function onClickButton(event) {
         groups = result.groups;
         clickCount++;
         
-        // UIを更新
+        // UIを更新（グループ値を明示的に更新）
         renderAll();
+        renderGroupValues();
         
         // 状態を保存
         saveGameState();
