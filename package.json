@@ -1,0 +1,22 @@
+{
+  "name": "gem-alliance-online",
+  "version": "1.0.0",
+  "description": "宝石連盟オンライン - Socket.IO対応クリッカーゲーム",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "game",
+    "clicker",
+    "socket.io",
+    "multiplayer"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "socket.io": "^4.5.4",
+    "express": "^4.18.2"
+  }
+}
