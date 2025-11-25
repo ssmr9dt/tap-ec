@@ -136,9 +136,74 @@ const groupValueC = document.getElementById('group-value-C');
 const groupValueD = document.getElementById('group-value-D');
 
 // ============================================
+// PixiJS初期化
+// ============================================
+let pixiApp = null;
+let pixiContainer = null;
+
+function initPixiJS() {
+    const container = document.getElementById('pixi-container');
+    if (!container) {
+        console.warn('PixiJS container not found');
+        return;
+    }
+
+    try {
+        // PixiJSアプリケーションを作成
+        pixiApp = new PIXI.Application({
+            width: window.innerWidth,
+            height: window.innerHeight,
+            backgroundAlpha: 0, // 透明な背景（既存のCSS背景を表示）
+            antialias: true,
+            resolution: window.devicePixelRatio || 1,
+            autoDensity: true
+        });
+
+        // コンテナに追加（v7ではcanvasプロパティを使用）
+        const canvas = pixiApp.canvas || pixiApp.view;
+        if (canvas) {
+            container.appendChild(canvas);
+        }
+
+        // リサイズ対応
+        window.addEventListener('resize', () => {
+            if (pixiApp) {
+                const renderer = pixiApp.renderer || pixiApp.screen;
+                if (renderer && renderer.resize) {
+                    renderer.resize(window.innerWidth, window.innerHeight);
+                } else {
+                    pixiApp.renderer.resize(window.innerWidth, window.innerHeight);
+                }
+            }
+        });
+
+        // コンテナを作成
+        pixiContainer = new PIXI.Container();
+        pixiApp.stage.addChild(pixiContainer);
+
+        console.log('PixiJS initialized successfully');
+    } catch (error) {
+        console.error('Failed to initialize PixiJS:', error);
+    }
+}
+
+// ============================================
 // 初期化関数
 // ============================================
 function init() {
+    // PixiJSを初期化
+    if (typeof PIXI !== 'undefined') {
+        initPixiJS();
+    } else {
+        console.warn('PixiJS is not loaded. Waiting for script to load...');
+        // PixiJSが読み込まれるまで待つ
+        const checkPixi = setInterval(() => {
+            if (typeof PIXI !== 'undefined') {
+                clearInterval(checkPixi);
+                initPixiJS();
+            }
+        }, 100);
+    }
     // クリックボタン下のグループアイコンボタンのイベントリスナー
     groupIconButtons.forEach(btn => {
         btn.addEventListener('click', (e) => {
@@ -461,7 +526,7 @@ async function onClickButton(event) {
 
 // クリックエフェクトを表示する関数（一画面内に収める）
 function showClickEffect(x, y) {
-    // エフェクト要素を作成
+    // 既存のDOMエフェクト（後方互換性のため保持）
     const effect = document.createElement('div');
     effect.className = 'click-effect';
     
@@ -485,6 +550,93 @@ function showClickEffect(x, y) {
             effect.remove();
         }
     }, 600);
+
+    // PixiJSでパーティクルエフェクトを追加
+    if (pixiApp && pixiContainer && player.group) {
+        showPixiClickEffect(adjustedX, adjustedY);
+    }
+}
+
+// PixiJSを使ったクリックエフェクト
+function showPixiClickEffect(x, y) {
+    if (!pixiApp || !pixiContainer) return;
+
+    const groupColor = groupColors[player.group];
+    // カラーコードを16進数に変換（例: #e91e63 -> 0xe91e63）
+    const color = parseInt(groupColor.replace('#', ''), 16);
+    
+    // パーティクルを作成
+    const particleCount = 20;
+    const particles = [];
+
+    for (let i = 0; i < particleCount; i++) {
+        const particle = new PIXI.Graphics();
+        
+        // ランダムなサイズと色
+        const size = Math.random() * 8 + 4;
+        const alpha = Math.random() * 0.5 + 0.5;
+        const particleColor = color;
+        
+        // 円形のパーティクルを描画
+        particle.beginFill(particleColor, alpha);
+        particle.drawCircle(0, 0, size);
+        particle.endFill();
+        
+        // 位置を設定
+        particle.x = x;
+        particle.y = y;
+        
+        // ランダムな速度と方向
+        const angle = (Math.PI * 2 * i) / particleCount + Math.random() * 0.5;
+        const speed = Math.random() * 5 + 3;
+        particle.vx = Math.cos(angle) * speed;
+        particle.vy = Math.sin(angle) * speed;
+        particle.life = 1.0;
+        particle.decay = Math.random() * 0.02 + 0.02;
+        
+        pixiContainer.addChild(particle);
+        particles.push(particle);
+    }
+
+    // アニメーションループ
+    const animate = () => {
+        let allDead = true;
+        
+        for (let i = particles.length - 1; i >= 0; i--) {
+            const particle = particles[i];
+            
+            if (particle.life > 0) {
+                allDead = false;
+                
+                // 位置を更新
+                particle.x += particle.vx;
+                particle.y += particle.vy;
+                
+                // 速度を減衰
+                particle.vx *= 0.95;
+                particle.vy *= 0.95;
+                
+                // ライフを減らす
+                particle.life -= particle.decay;
+                particle.alpha = particle.life;
+                
+                // サイズを縮小
+                particle.scale.x = particle.life;
+                particle.scale.y = particle.life;
+            } else {
+                // パーティクルを削除
+                pixiContainer.removeChild(particle);
+                particle.destroy();
+                particles.splice(i, 1);
+            }
+        }
+        
+        if (!allDead) {
+            requestAnimationFrame(animate);
+        }
+    };
+    
+    animate();
 }
 
 // 「+1」が飛ぶアニメーションを表示する関数
