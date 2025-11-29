@@ -235,11 +235,9 @@ body::before {
     justify-content: space-between;
     align-items: center;
     padding: 25px 40px;
-    background: linear-gradient(135deg, rgba(26, 31, 58, 0.95) 0%, rgba(45, 27, 78, 0.95) 100%);
-    box-shadow: 
-        0 4px 20px rgba(0, 0, 0, 0.5),
-        inset 0 1px 0 rgba(255, 255, 255, 0.1);
-    border-bottom: 3px solid rgba(120, 119, 198, 0.3);
+    background: transparent;
+    box-shadow: none;
+    border-bottom: none;
     position: relative;
     z-index: 10;
 }
@@ -608,36 +606,35 @@ body::before {
 .cave-button {
     background: transparent;
     border: 4px solid rgba(139, 115, 85, 0.5);
+    position: relative;
 }
 
-.cave-icon {
+.cave-background {
     width: 100%;
     height: 100%;
+    object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
     filter: drop-shadow(0 0 10px rgba(139, 115, 85, 0.5));
-}
-
-.cave-entrance {
-    transition: opacity 0.3s ease;
-}
-
-.cave-interior {
-    transition: opacity 0.3s ease;
-}
-
-.cave-back-light {
-    animation: caveGlow 2s ease-in-out infinite;
+    pointer-events: none;
 }
 
 .pickaxe-icon {
-    animation: pickaxeIdle 2s ease-in-out infinite;
-    transform-origin: 200px 230px;
+    width: 80px;
+    height: 80px;
+    position: absolute;
+    z-index: 5;
+    transform-origin: center center;
+    pointer-events: none;
+    display: none;
+    opacity: 0;
+    transition: opacity 0.3s ease-out;
 }
 
-.click-button:active .pickaxe-icon {
-    animation: pickaxeSwing 0.3s ease-out;
-}
-
-.click-button.clicking .pickaxe-icon {
+.pickaxe-icon.swinging {
+    display: block;
+    opacity: 1;
     animation: pickaxeSwing 0.3s ease-out;
 }
 
@@ -661,7 +658,7 @@ body::before {
 }
 
 .cave-text {
-    margin-top: 10px;
+    margin-top: auto;
     font-size: 1.5rem;
     text-shadow: 
         0 0 10px rgba(139, 115, 85, 0.8),
@@ -669,38 +666,30 @@ body::before {
     z-index: 10;
     position: relative;
     color: #d4a574;
+    margin-bottom: 20px;
 }
 
-@keyframes caveGlow {
-    0%, 100% {
-        opacity: 0.3;
+@keyframes pickaxeSwing {
+    0% {
+        transform: translate(-50%, -50%) rotate(-10deg);
     }
-    50% {
-        opacity: 0.5;
+    30% {
+        transform: translate(-50%, calc(-50% - 25px)) rotate(45deg);
+    }
+    60% {
+        transform: translate(-50%, calc(-50% + 5px)) rotate(10deg);
+    }
+    100% {
+        transform: translate(-50%, -50%) rotate(-5deg);
     }
 }
 
 @keyframes pickaxeIdle {
     0%, 100% {
-        transform: rotate(-5deg);
+        transform: translate(-50%, -50%) rotate(-5deg);
     }
     50% {
-        transform: rotate(5deg);
-    }
-}
-
-@keyframes pickaxeSwing {
-    0% {
-        transform: rotate(-10deg);
-    }
-    30% {
-        transform: translateY(-20px) rotate(45deg);
-    }
-    60% {
-        transform: translateY(5px) rotate(10deg);
-    }
-    100% {
-        transform: rotate(-5deg);
+        transform: translate(-50%, -50%) rotate(5deg);
     }
 }
 

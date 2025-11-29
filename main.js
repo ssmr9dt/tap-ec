@@ -136,9 +136,146 @@ const groupValueC = document.getElementById('group-value-C');
 const groupValueD = document.getElementById('group-value-D');
 
 // ============================================
+// PixiJS初期化
+// ============================================
+let pixiApp = null;
+let pixiContainer = null;
+
+// ============================================
+// ピッケルプール管理
+// ============================================
+const pickaxePool = [];
+const MAX_PICKAXES = 10; // 最大ピッケル数
+let clickButtonElement = null;
+
+// ピッケルプールを初期化
+function initPickaxePool() {
+    clickButtonElement = document.getElementById('click-button');
+    if (!clickButtonElement) return;
+    
+    // 複数のピッケルを事前に作成
+    for (let i = 0; i < MAX_PICKAXES; i++) {
+        const pickaxe = document.createElement('img');
+        pickaxe.src = 'img/pickaxe.svg';
+        pickaxe.alt = 'ツルハシ';
+        pickaxe.className = 'pickaxe-icon';
+        pickaxe.style.display = 'none';
+        pickaxe.style.opacity = '0';
+        clickButtonElement.appendChild(pickaxe);
+        pickaxePool.push({
+            element: pickaxe,
+            inUse: false
+        });
+    }
+}
+
+// 使用可能なピッケルを取得
+function getAvailablePickaxe() {
+    for (let i = 0; i < pickaxePool.length; i++) {
+        if (!pickaxePool[i].inUse) {
+            pickaxePool[i].inUse = true;
+            return pickaxePool[i];
+        }
+    }
+    // 全て使用中の場合は新しいピッケルを作成
+    if (pickaxePool.length < MAX_PICKAXES * 2) {
+        const pickaxe = document.createElement('img');
+        pickaxe.src = 'img/pickaxe.svg';
+        pickaxe.alt = 'ツルハシ';
+        pickaxe.className = 'pickaxe-icon';
+        pickaxe.style.display = 'none';
+        pickaxe.style.opacity = '0';
+        clickButtonElement.appendChild(pickaxe);
+        const pickaxeObj = {
+            element: pickaxe,
+            inUse: true
+        };
+        pickaxePool.push(pickaxeObj);
+        return pickaxeObj;
+    }
+    return null; // プールが満杯の場合はnullを返す
+}
+
+// ピッケルをプールに戻す
+function returnPickaxeToPool(pickaxeObj) {
+    if (pickaxeObj) {
+        pickaxeObj.inUse = false;
+        const element = pickaxeObj.element;
+        element.style.display = 'none';
+        element.style.opacity = '0';
+        element.classList.remove('swinging');
+        // 位置をリセット（次の使用時に上書きされるが、念のため）
+        element.style.left = '';
+        element.style.top = '';
+    }
+}
+
+function initPixiJS() {
+    const container = document.getElementById('pixi-container');
+    if (!container) {
+        console.warn('PixiJS container not found');
+        return;
+    }
+
+    try {
+        // PixiJSアプリケーションを作成
+        pixiApp = new PIXI.Application({
+            width: window.innerWidth,
+            height: window.innerHeight,
+            backgroundAlpha: 0, // 透明な背景（既存のCSS背景を表示）
+            antialias: true,
+            resolution: window.devicePixelRatio || 1,
+            autoDensity: true
+        });
+
+        // コンテナに追加（v7ではcanvasプロパティを使用）
+        const canvas = pixiApp.canvas || pixiApp.view;
+        if (canvas) {
+            container.appendChild(canvas);
+        }
+
+        // リサイズ対応
+        window.addEventListener('resize', () => {
+            if (pixiApp) {
+                const renderer = pixiApp.renderer || pixiApp.screen;
+                if (renderer && renderer.resize) {
+                    renderer.resize(window.innerWidth, window.innerHeight);
+                } else {
+                    pixiApp.renderer.resize(window.innerWidth, window.innerHeight);
+                }
+            }
+        });
+
+        // コンテナを作成
+        pixiContainer = new PIXI.Container();
+        pixiApp.stage.addChild(pixiContainer);
+
+        console.log('PixiJS initialized successfully');
+    } catch (error) {
+        console.error('Failed to initialize PixiJS:', error);
+    }
+}
+
+// ============================================
 // 初期化関数
 // ============================================
 function init() {
+    // PixiJSを初期化
+    if (typeof PIXI !== 'undefined') {
+        initPixiJS();
+    } else {
+        console.warn('PixiJS is not loaded. Waiting for script to load...');
+        // PixiJSが読み込まれるまで待つ
+        const checkPixi = setInterval(() => {
+            if (typeof PIXI !== 'undefined') {
+                clearInterval(checkPixi);
+                initPixiJS();
+            }
+        }, 100);
+    }
+    
+    // ピッケルプールを初期化
+    initPickaxePool();
     // クリックボタン下のグループアイコンボタンのイベントリスナー
     groupIconButtons.forEach(btn => {
         btn.addEventListener('click', (e) => {
@@ -426,11 +563,53 @@ async function onClickButton(event) {
     showClickEffect(clickX, clickY);
     
     // ツルハシのアニメーションをトリガー
-    const clickButton = document.getElementById('click-button');
-    if (clickButton) {
-        clickButton.classList.add('clicking');
+    const pickaxeObj = getAvailablePickaxe();
+    
+    if (pickaxeObj && clickButtonElement) {
+        const pickaxeIcon = pickaxeObj.element;
+        
+        // クリックボタンの位置を取得
+        const buttonRect = clickButtonElement.getBoundingClientRect();
+        
+        // クリック位置をボタン内の相対位置に変換
+        let relativeX = clickX - buttonRect.left;
+        let relativeY = clickY - buttonRect.top;
+        
+        // クリック位置がボタン外の場合はボタン中央を使用
+        if (relativeX < 0 || relativeX > buttonRect.width || 
+            relativeY < 0 || relativeY > buttonRect.height) {
+            relativeX = buttonRect.width / 2;
+            relativeY = buttonRect.height / 2;
+        }
+        
+        // ランダムに散らす（±40pxの範囲）
+        const offsetX = (Math.random() - 0.5) * 80;
+        const offsetY = (Math.random() - 0.5) * 80;
+        
+        // ボタン内に収めるように調整
+        const finalX = Math.max(40, Math.min(buttonRect.width - 40, relativeX + offsetX));
+        const finalY = Math.max(40, Math.min(buttonRect.height - 40, relativeY + offsetY));
+        
+        // ピッケルの位置を設定（ボタン内の相対位置）
+        pickaxeIcon.style.left = `${finalX}px`;
+        pickaxeIcon.style.top = `${finalY}px`;
+        pickaxeIcon.style.transform = 'translate(-50%, -50%)';
+        
+        // ピッケルを表示
+        pickaxeIcon.style.display = 'block';
+        // 強制的にリフローを発生させてからopacityを設定
+        pickaxeIcon.offsetHeight;
+        pickaxeIcon.style.opacity = '1';
+        pickaxeIcon.classList.add('swinging');
+        
+        // アニメーション終了後にピッケルを非表示にしてプールに戻す（アニメーション時間: 300ms）
         setTimeout(() => {
-            clickButton.classList.remove('clicking');
+            // フェードアウト
+            pickaxeIcon.style.opacity = '0';
+            // フェードアウト完了後に非表示にしてプールに戻す（transition時間: 300ms）
+            setTimeout(() => {
+                returnPickaxeToPool(pickaxeObj);
+            }, 300);
         }, 300);
     }
     
@@ -461,7 +640,7 @@ async function onClickButton(event) {
 
 // クリックエフェクトを表示する関数（一画面内に収める）
 function showClickEffect(x, y) {
-    // エフェクト要素を作成
+    // 既存のDOMエフェクト（後方互換性のため保持）
     const effect = document.createElement('div');
     effect.className = 'click-effect';
     
@@ -485,6 +664,93 @@ function showClickEffect(x, y) {
             effect.remove();
         }
     }, 600);
+
+    // PixiJSでパーティクルエフェクトを追加
+    if (pixiApp && pixiContainer && player.group) {
+        showPixiClickEffect(adjustedX, adjustedY);
+    }
+}
+
+// PixiJSを使ったクリックエフェクト
+function showPixiClickEffect(x, y) {
+    if (!pixiApp || !pixiContainer) return;
+
+    const groupColor = groupColors[player.group];
+    // カラーコードを16進数に変換（例: #e91e63 -> 0xe91e63）
+    const color = parseInt(groupColor.replace('#', ''), 16);
+    
+    // パーティクルを作成
+    const particleCount = 20;
+    const particles = [];
+
+    for (let i = 0; i < particleCount; i++) {
+        const particle = new PIXI.Graphics();
+        
+        // ランダムなサイズと色
+        const size = Math.random() * 8 + 4;
+        const alpha = Math.random() * 0.5 + 0.5;
+        const particleColor = color;
+        
+        // 円形のパーティクルを描画
+        particle.beginFill(particleColor, alpha);
+        particle.drawCircle(0, 0, size);
+        particle.endFill();
+        
+        // 位置を設定
+        particle.x = x;
+        particle.y = y;
+        
+        // ランダムな速度と方向
+        const angle = (Math.PI * 2 * i) / particleCount + Math.random() * 0.5;
+        const speed = Math.random() * 5 + 3;
+        particle.vx = Math.cos(angle) * speed;
+        particle.vy = Math.sin(angle) * speed;
+        particle.life = 1.0;
+        particle.decay = Math.random() * 0.02 + 0.02;
+        
+        pixiContainer.addChild(particle);
+        particles.push(particle);
+    }
+
+    // アニメーションループ
+    const animate = () => {
+        let allDead = true;
+        
+        for (let i = particles.length - 1; i >= 0; i--) {
+            const particle = particles[i];
+            
+            if (particle.life > 0) {
+                allDead = false;
+                
+                // 位置を更新
+                particle.x += particle.vx;
+                particle.y += particle.vy;
+                
+                // 速度を減衰
+                particle.vx *= 0.95;
+                particle.vy *= 0.95;
+                
+                // ライフを減らす
+                particle.life -= particle.decay;
+                particle.alpha = particle.life;
+                
+                // サイズを縮小
+                particle.scale.x = particle.life;
+                particle.scale.y = particle.life;
+            } else {
+                // パーティクルを削除
+                pixiContainer.removeChild(particle);
+                particle.destroy();
+                particles.splice(i, 1);
+            }
+        }
+        
+        if (!allDead) {
+            requestAnimationFrame(animate);
+        }
+    };
+    
+    animate();
 }
 
 // 「+1」が飛ぶアニメーションを表示する関数
