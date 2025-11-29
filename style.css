@@ -627,17 +627,16 @@ body::before {
     left: 50%;
     transform: translate(-50%, -50%);
     z-index: 5;
-    animation: pickaxeIdle 2s ease-in-out infinite;
     transform-origin: center center;
     pointer-events: none;
-}
-
-.click-button:active .pickaxe-icon {
-    animation: pickaxeSwing 0.3s ease-out;
-    transform: translate(-50%, -50%);
+    display: none;
+    opacity: 0;
+    transition: opacity 0.3s ease-out;
 }
 
 .click-button.clicking .pickaxe-icon {
+    display: block;
+    opacity: 1;
     animation: pickaxeSwing 0.3s ease-out;
     transform: translate(-50%, -50%);
 }

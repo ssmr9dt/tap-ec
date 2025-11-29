@@ -492,10 +492,26 @@ async function onClickButton(event) {
     
     // ツルハシのアニメーションをトリガー
     const clickButton = document.getElementById('click-button');
-    if (clickButton) {
+    const pickaxeIcon = document.querySelector('.pickaxe-icon');
+    
+    if (clickButton && pickaxeIcon) {
+        // ピッケルを表示（CSSクラスで制御）
+        pickaxeIcon.style.display = 'block';
+        // 強制的にリフローを発生させてからクラスを追加
+        pickaxeIcon.offsetHeight;
+        
+        // クリッククラスを追加してアニメーションを開始
         clickButton.classList.add('clicking');
+        
+        // アニメーション終了後にピッケルを非表示にする（アニメーション時間: 300ms）
         setTimeout(() => {
             clickButton.classList.remove('clicking');
+            // フェードアウト
+            pickaxeIcon.style.opacity = '0';
+            // フェードアウト完了後に非表示にする（transition時間: 300ms）
+            setTimeout(() => {
+                pickaxeIcon.style.display = 'none';
+            }, 300);
         }, 300);
     }
     
