@@ -623,9 +623,6 @@ body::before {
     width: 80px;
     height: 80px;
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
     z-index: 5;
     transform-origin: center center;
     pointer-events: none;
@@ -638,7 +635,6 @@ body::before {
     display: block;
     opacity: 1;
     animation: pickaxeSwing 0.3s ease-out;
-    transform: translate(-50%, -50%);
 }
 
 .click-button:hover {
@@ -677,7 +673,7 @@ body::before {
         transform: translate(-50%, -50%) rotate(-10deg);
     }
     30% {
-        transform: translate(-50%, calc(-50% - 20px)) rotate(45deg);
+        transform: translate(-50%, calc(-50% - 25px)) rotate(45deg);
     }
     60% {
         transform: translate(-50%, calc(-50% + 5px)) rotate(10deg);

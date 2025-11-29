@@ -200,9 +200,13 @@ function getAvailablePickaxe() {
 function returnPickaxeToPool(pickaxeObj) {
     if (pickaxeObj) {
         pickaxeObj.inUse = false;
-        pickaxeObj.element.style.display = 'none';
-        pickaxeObj.element.style.opacity = '0';
-        pickaxeObj.element.classList.remove('swinging');
+        const element = pickaxeObj.element;
+        element.style.display = 'none';
+        element.style.opacity = '0';
+        element.classList.remove('swinging');
+        // 位置をリセット（次の使用時に上書きされるが、念のため）
+        element.style.left = '';
+        element.style.top = '';
     }
 }
 
@@ -563,6 +567,33 @@ async function onClickButton(event) {
     
     if (pickaxeObj && clickButtonElement) {
         const pickaxeIcon = pickaxeObj.element;
+        
+        // クリックボタンの位置を取得
+        const buttonRect = clickButtonElement.getBoundingClientRect();
+        
+        // クリック位置をボタン内の相対位置に変換
+        let relativeX = clickX - buttonRect.left;
+        let relativeY = clickY - buttonRect.top;
+        
+        // クリック位置がボタン外の場合はボタン中央を使用
+        if (relativeX < 0 || relativeX > buttonRect.width || 
+            relativeY < 0 || relativeY > buttonRect.height) {
+            relativeX = buttonRect.width / 2;
+            relativeY = buttonRect.height / 2;
+        }
+        
+        // ランダムに散らす（±40pxの範囲）
+        const offsetX = (Math.random() - 0.5) * 80;
+        const offsetY = (Math.random() - 0.5) * 80;
+        
+        // ボタン内に収めるように調整
+        const finalX = Math.max(40, Math.min(buttonRect.width - 40, relativeX + offsetX));
+        const finalY = Math.max(40, Math.min(buttonRect.height - 40, relativeY + offsetY));
+        
+        // ピッケルの位置を設定（ボタン内の相対位置）
+        pickaxeIcon.style.left = `${finalX}px`;
+        pickaxeIcon.style.top = `${finalY}px`;
+        pickaxeIcon.style.transform = 'translate(-50%, -50%)';
         
         // ピッケルを表示
         pickaxeIcon.style.display = 'block';
