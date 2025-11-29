@@ -141,6 +141,71 @@ const groupValueD = document.getElementById('group-value-D');
 let pixiApp = null;
 let pixiContainer = null;
 
+// ============================================
+// ピッケルプール管理
+// ============================================
+const pickaxePool = [];
+const MAX_PICKAXES = 10; // 最大ピッケル数
+let clickButtonElement = null;
+
+// ピッケルプールを初期化
+function initPickaxePool() {
+    clickButtonElement = document.getElementById('click-button');
+    if (!clickButtonElement) return;
+    
+    // 複数のピッケルを事前に作成
+    for (let i = 0; i < MAX_PICKAXES; i++) {
+        const pickaxe = document.createElement('img');
+        pickaxe.src = 'img/pickaxe.svg';
+        pickaxe.alt = 'ツルハシ';
+        pickaxe.className = 'pickaxe-icon';
+        pickaxe.style.display = 'none';
+        pickaxe.style.opacity = '0';
+        clickButtonElement.appendChild(pickaxe);
+        pickaxePool.push({
+            element: pickaxe,
+            inUse: false
+        });
+    }
+}
+
+// 使用可能なピッケルを取得
+function getAvailablePickaxe() {
+    for (let i = 0; i < pickaxePool.length; i++) {
+        if (!pickaxePool[i].inUse) {
+            pickaxePool[i].inUse = true;
+            return pickaxePool[i];
+        }
+    }
+    // 全て使用中の場合は新しいピッケルを作成
+    if (pickaxePool.length < MAX_PICKAXES * 2) {
+        const pickaxe = document.createElement('img');
+        pickaxe.src = 'img/pickaxe.svg';
+        pickaxe.alt = 'ツルハシ';
+        pickaxe.className = 'pickaxe-icon';
+        pickaxe.style.display = 'none';
+        pickaxe.style.opacity = '0';
+        clickButtonElement.appendChild(pickaxe);
+        const pickaxeObj = {
+            element: pickaxe,
+            inUse: true
+        };
+        pickaxePool.push(pickaxeObj);
+        return pickaxeObj;
+    }
+    return null; // プールが満杯の場合はnullを返す
+}
+
+// ピッケルをプールに戻す
+function returnPickaxeToPool(pickaxeObj) {
+    if (pickaxeObj) {
+        pickaxeObj.inUse = false;
+        pickaxeObj.element.style.display = 'none';
+        pickaxeObj.element.style.opacity = '0';
+        pickaxeObj.element.classList.remove('swinging');
+    }
+}
+
 function initPixiJS() {
     const container = document.getElementById('pixi-container');
     if (!container) {
@@ -204,6 +269,9 @@ function init() {
             }
         }, 100);
     }
+    
+    // ピッケルプールを初期化
+    initPickaxePool();
     // クリックボタン下のグループアイコンボタンのイベントリスナー
     groupIconButtons.forEach(btn => {
         btn.addEventListener('click', (e) => {
@@ -491,26 +559,25 @@ async function onClickButton(event) {
     showClickEffect(clickX, clickY);
     
     // ツルハシのアニメーションをトリガー
-    const clickButton = document.getElementById('click-button');
-    const pickaxeIcon = document.querySelector('.pickaxe-icon');
+    const pickaxeObj = getAvailablePickaxe();
     
-    if (clickButton && pickaxeIcon) {
-        // ピッケルを表示（CSSクラスで制御）
+    if (pickaxeObj && clickButtonElement) {
+        const pickaxeIcon = pickaxeObj.element;
+        
+        // ピッケルを表示
         pickaxeIcon.style.display = 'block';
-        // 強制的にリフローを発生させてからクラスを追加
+        // 強制的にリフローを発生させてからopacityを設定
         pickaxeIcon.offsetHeight;
+        pickaxeIcon.style.opacity = '1';
+        pickaxeIcon.classList.add('swinging');
         
-        // クリッククラスを追加してアニメーションを開始
-        clickButton.classList.add('clicking');
-        
-        // アニメーション終了後にピッケルを非表示にする（アニメーション時間: 300ms）
+        // アニメーション終了後にピッケルを非表示にしてプールに戻す（アニメーション時間: 300ms）
         setTimeout(() => {
-            clickButton.classList.remove('clicking');
             // フェードアウト
             pickaxeIcon.style.opacity = '0';
-            // フェードアウト完了後に非表示にする（transition時間: 300ms）
+            // フェードアウト完了後に非表示にしてプールに戻す（transition時間: 300ms）
             setTimeout(() => {
-                pickaxeIcon.style.display = 'none';
+                returnPickaxeToPool(pickaxeObj);
             }, 300);
         }, 300);
     }

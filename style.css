@@ -634,7 +634,7 @@ body::before {
     transition: opacity 0.3s ease-out;
 }
 
-.click-button.clicking .pickaxe-icon {
+.pickaxe-icon.swinging {
     display: block;
     opacity: 1;
     animation: pickaxeSwing 0.3s ease-out;
