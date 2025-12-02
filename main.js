@@ -1,4 +1,89 @@
 // ============================================
+// Socket.IO接続
+// ============================================
+let socket = null;
+const SOCKET_URL = window.location.origin;
+
+// Socket.IO接続の初期化
+function initSocket() {
+    socket = io(SOCKET_URL);
+
+    socket.on('connect', () => {
+        console.log('Socket.IO接続が確立されました:', socket.id);
+    });
+
+    socket.on('disconnect', () => {
+        console.log('Socket.IO接続が切断されました');
+    });
+
+    // 初期状態を受信
+    socket.on('initialState', (data) => {
+        console.log('初期状態を受信:', data);
+        if (data.player) {
+            player = data.player;
+        }
+        if (data.groups) {
+            groups = data.groups;
+        }
+        if (data.rates) {
+            rates = data.rates;
+        }
+        renderAll();
+        renderGroupValues();
+        
+        // グループが選択されている場合はUIを更新
+        if (player.group) {
+            selectGroupUI(player.group);
+        }
+    });
+
+    // 状態更新を受信（他のプレイヤーのアクション）
+    socket.on('stateUpdate', (data) => {
+        console.log('状態更新を受信:', data);
+        if (data.groups) {
+            groups = data.groups;
+        }
+        if (data.rates) {
+            rates = data.rates;
+        }
+        // 自分のプレイヤー情報が更新された場合のみ更新
+        if (data.playerId === socket.id && data.player) {
+            player = data.player;
+        }
+        renderAll();
+        renderGroupValues();
+    });
+
+    // クリック結果を受信
+    socket.on('clickResult', (data) => {
+        console.log('クリック結果を受信:', data);
+        if (data.player) {
+            player = data.player;
+        }
+        if (data.groups) {
+            groups = data.groups;
+        }
+        renderAll();
+        renderGroupValues();
+    });
+
+    // グループ選択の確認
+    socket.on('groupSelected', (data) => {
+        console.log('グループ選択が確認されました:', data);
+        if (data.group) {
+            player.group = data.group;
+            selectGroupUI(data.group);
+        }
+    });
+
+    // エラー処理
+    socket.on('error', (error) => {
+        console.error('Socket.IOエラー:', error);
+        alert(error.message || 'エラーが発生しました');
+    });
+}
+
+// ============================================
 // 状態オブジェクト
 // ============================================
 let player = {
@@ -210,7 +295,10 @@ function init() {
     }, { passive: false });
 
 
-    // モックサーバーから初期状態を読み込む（実際はローカルで初期値セット）
+    // Socket.IO接続を初期化
+    initSocket();
+    
+    // ローカルストレージから初期状態を読み込む
     loadInitialState();
     
     // iPad/iPhoneでのダブルタップ拡大を防止
@@ -280,10 +368,8 @@ function preventDoubleTapZoom() {
     });
 }
 
-// グループ選択
-function selectGroup(group) {
-    player.group = group;
-    
+// グループ選択UIの更新（内部関数）
+function selectGroupUI(group) {
     // プレイヤーグループの色を設定
     if (playerGroupDisplay) {
         playerGroupDisplay.style.backgroundColor = groupColors[group];
@@ -306,6 +392,19 @@ function selectGroup(group) {
     
     renderAll();
     renderGroupValues();
+}
+
+// グループ選択
+function selectGroup(group) {
+    player.group = group;
+    
+    // Socket.IOでサーバーに送信
+    if (socket && socket.connected) {
+        socket.emit('selectGroup', { group: group });
+    }
+    
+    // UIを更新
+    selectGroupUI(group);
     
     // 状態を保存
     saveGameState();
@@ -313,31 +412,11 @@ function selectGroup(group) {
 
 // 初期状態の読み込み（localStorageから復元）
 function loadInitialState() {
+    // Socket.IO接続が確立されるまで、ローカルストレージから復元
     const loaded = loadGameState();
     if (loaded && player.group) {
-        // プレイヤーグループの色を設定
-        if (playerGroupDisplay) {
-            playerGroupDisplay.style.backgroundColor = groupColors[player.group];
-            playerGroupDisplay.textContent = groupNames[player.group];
-        }
-    
-        // クリックボタン下のグループアイコンボタンのスタイルを更新
-        groupIconButtons.forEach(btn => {
-            const btnGroup = btn.dataset.group;
-            if (btnGroup === player.group) {
-                btn.style.opacity = '1';
-                btn.style.transform = 'scale(1.2)';
-                btn.style.filter = `drop-shadow(0 0 15px ${groupColors[player.group]})`;
-            } else {
-                btn.style.opacity = '0.5';
-                btn.style.transform = 'scale(1)';
-                btn.style.filter = 'drop-shadow(0 0 5px rgba(0, 0, 0, 0.5))';
-            }
-        });
-        
-        // UIを更新
-        renderAll();
-        renderGroupValues();
+        // UIを更新（Socket.IO接続後にサーバーから最新状態を受信するため、ここではUIのみ）
+        selectGroupUI(player.group);
     } else {
         // 保存された状態がない場合は初期状態
         // 初期値は既に設定済み（全て0、レートは1）
@@ -435,25 +514,29 @@ async function onClickButton(event) {
     }
     
     try {
-        // モックAPIを呼び出し
-        const result = await mockClick(player, groups);
-        
-        // 状態を更新
-        player = result.player;
-        groups = result.groups;
-        clickCount++;
-        
-        // UIを更新（グループ値を明示的に更新）
-        renderAll();
-        renderGroupValues();
-        
-        // 状態を保存
-        saveGameState();
-        
-        // 「+1」が飛ぶアニメーションを表示（少し遅延させて確実に表示）
-        setTimeout(() => {
-            showFloatingText(clickX, clickY, '+1');
-        }, 50);
+        // Socket.IOでサーバーにクリックを送信
+        if (socket && socket.connected) {
+            socket.emit('click', {});
+            clickCount++;
+            
+            // 「+1」が飛ぶアニメーションを表示（少し遅延させて確実に表示）
+            setTimeout(() => {
+                showFloatingText(clickX, clickY, '+1');
+            }, 50);
+        } else {
+            console.warn('Socket.IO接続が確立されていません');
+            // フォールバック: ローカルで処理（オフライン時）
+            const result = await mockClick(player, groups);
+            player = result.player;
+            groups = result.groups;
+            clickCount++;
+            renderAll();
+            renderGroupValues();
+            saveGameState();
+            setTimeout(() => {
+                showFloatingText(clickX, clickY, '+1');
+            }, 50);
+        }
     } catch (error) {
         console.error(error);
     }
